@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+    <PropertyGroup>
+        <RootNamespace>Weight</RootNamespace>
+        <ProjectGuid>2FFAE269-937F-4DC2-9DD4-E2EF6BB64817</ProjectGuid>
+        <OutputType>executable</OutputType>
+        <AssemblyName>Weight</AssemblyName>
+        <AllowGlobals>False</AllowGlobals>
+        <AllowLegacyWith>False</AllowLegacyWith>
+        <AllowLegacyOutParams>False</AllowLegacyOutParams>
+        <AllowLegacyCreate>False</AllowLegacyCreate>
+        <AllowUnsafeCode>False</AllowUnsafeCode>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <SDK>iOS</SDK>
+        <CreateAppBundle>True</CreateAppBundle>
+        <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
+        <CodesignCertificateName>iPhone Developer: marc hoffman (K2YTD84U6W)</CodesignCertificateName>
+        <ProvisioningProfile>96401e63-3961-400d-91d7-07a51eef36a3</ProvisioningProfile>
+        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
+        <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+        <OutputPath>.\bin\Debug</OutputPath>
+        <DefineConstants>DEBUG;TRACE;</DefineConstants>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <EnableAsserts>True</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Release</OutputPath>
+        <GenerateDebugInfo>False</GenerateDebugInfo>
+        <EnableAsserts>False</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+        <CreateIPA>True</CreateIPA>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="CoreGraphics.fx"/>
+        <Reference Include="Foundation.fx"/>
+        <Reference Include="UIKit.fx"/>
+        <Reference Include="rtl.fx"/>
+        <Reference Include="libNougat.fx"/>
+        <Reference Include="libSwift.fx"/>
+        <Reference Include="HealthKit.fx"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="AppDelegate.swift"/>
+        <Compile Include="MainViewController.swift"/>
+        <Compile Include="Program.swift"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Resources\Info.plist"/>
+        <AppResource Include="Resources\App Icons\App-29.png"/>
+        <AppResource Include="Resources\App Icons\App-40.png"/>
+        <AppResource Include="Resources\App Icons\App-48.png"/>
+        <AppResource Include="Resources\App Icons\App-57.png"/>
+        <AppResource Include="Resources\App Icons\App-58.png"/>
+        <AppResource Include="Resources\App Icons\App-72.png"/>
+        <AppResource Include="Resources\App Icons\App-76.png"/>
+        <AppResource Include="Resources\App Icons\App-80.png"/>
+        <AppResource Include="Resources\App Icons\App-96.png"/>
+        <AppResource Include="Resources\App Icons\App-114.png"/>
+        <AppResource Include="Resources\App Icons\App-120.png"/>
+        <AppResource Include="Resources\App Icons\App-144.png"/>
+        <AppResource Include="Resources\App Icons\App-152.png"/>
+        <Storyboard Include="Resources\MainStoryboard.storyboard"/>
+        <None Include="Resources\App Icons\App-512.png"/>
+        <None Include="Resources\App Icons\App-1024.png"/>
+        <AppResource Include="Resources\Launch Images\Default-568h@2x.png"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Oxygene\RemObjects.Oxygene.Nougat.targets"/>
+</Project>
