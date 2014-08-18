@@ -1,4 +1,4 @@
-import UIKit
+﻿import UIKit
 
 @IBObject public class AppDelegate : IUIApplicationDelegate {
 
@@ -6,6 +6,7 @@ import UIKit
 
 	func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -> Bool {
 
+		application.statusBarStyle = .LightContent
 		return true
 	}
 

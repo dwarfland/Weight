@@ -8,6 +8,7 @@
         <scene sceneID="q0G-sc-BHb">
             <objects>
                 <navigationController id="upw-XD-ta5" sceneMemberID="viewController">
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="8jC-BL-IBN">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -40,7 +41,7 @@
                                 </constraints>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="128"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" enablesReturnKeyAutomatically="YES"/>
+                                <textInputTraits key="textInputTraits" keyboardType="decimalPad" enablesReturnKeyAutomatically="YES"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Last recorded x.x kg" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="In2-3e-0lt">
                                 <rect key="frame" x="222" y="72" width="157" height="21"/>
@@ -74,6 +75,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jHu-K8-Lny"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="last" destination="In2-3e-0lt" id="faE-iC-q34"/>
                         <outlet property="newValue" destination="wZ2-3R-8i9" id="65b-SL-Fdo"/>

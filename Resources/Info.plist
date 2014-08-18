@@ -1,29 +1,24 @@
 ﻿<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-  <dict>
-    <key>CFBundleIcons</key>
-    <dict>
-      <key>CFBundlePrimaryIcon</key>
-      <dict>
-	<key>CFBundleIconFiles</key>
+	<dict>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>App-120.png</string>
+			</array>
+		</dict>
+	</dict>
+	<key>UIDeviceFamily</key>
 	<array>
-	  <string>App-29.png</string>
-	  <string>App-48.png</string>
-	  <string>App-57.png</string>
-	  <string>App-58.png</string>
-	  <string>App-72.png</string>
-	  <string>App-96.png</string>
-	  <string>App-114.png</string>
-	  <string>App-144.png</string>
+		<integer>1</integer>
 	</array>
-      </dict>
-    </dict>
-    <key>UIDeviceFamily</key>
-    <array>
-	<integer>1</integer>
-    </array>
-    <key>UIMainStoryboardFile</key>
-    <string>MainStoryboard</string>
+	<key>UIMainStoryboardFile</key>
+	<string>MainStoryboard</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UIStatusBarTintParameters</key>
