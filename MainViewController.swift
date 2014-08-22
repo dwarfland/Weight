@@ -6,8 +6,7 @@ import HealthKit
 	public override func viewDidLoad() {
 
 		super.viewDidLoad()
-		//navigationController.navigationBar.tintColor := UIColor.colorWithRed(0.8) green(0.8) blue(1.0) alpha(1.0)
-		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0, blue: 0, alpha: 1.0)
+		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		let attributes = NSMutableDictionary()
 		attributes[NSForegroundColorAttributeName] = UIColor.colorWithRed(1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 		navigationController.navigationBar.titleTextAttributes = attributes
@@ -16,11 +15,10 @@ import HealthKit
 		newValue.becomeFirstResponder()
 		
 		let types = NSSet.setWithObject(weightQuantityType)
-		healthStore.requestAuthorizationToShareTypes(types, readTypes: types, completion: { (success: Bool, error: NSError?) in 
+		healthStore.requestAuthorizationToShareTypes(types, readTypes: types, completion: { success, error in 
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
-				NSLog("auhtorized")
 				updateInfo()
 				healthStore.executeQuery(observerQuery)
 			}
@@ -28,14 +26,7 @@ import HealthKit
 		title = "Weight"
 	}
 	
-	public override func didReceiveMemoryWarning() {
-
-		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
-	}
-	
 	func relativeStringForDate(date: NSDate) -> String {
-		
 		
 		let comps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day|NSCalendarUnit.Month.Year, fromDate: date)
 		let nowComps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day|NSCalendarUnit.Month.Year, fromDate: NSDate.date)
@@ -49,7 +40,7 @@ import HealthKit
 		let df = NSDateFormatter()
 		df.doesRelativeDateFormatting = true
 		df.dateStyle = NSDateFormatterStyle.NSDateFormatterMediumStyle
-		return df.stringFromDate(date).lowercaseString!  // bug: shouild not need !
+		return df.stringFromDate(date).lowercaseString
 	}
 	
 	func updateInfo() {
@@ -64,42 +55,50 @@ import HealthKit
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
-				NSLog("results: %@", results)
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
-						last.text = NSString.stringWithFormat("Last was %@, %@.", results![0].quantity, relativeStringForDate(results![0].endDate!)) // bug: shoud not need !
+						last.text = NSString.stringWithFormat("Last was %@, %@.", results![0].quantity, relativeStringForDate(results![0].endDate)) 
 					}
 				}
 			}
-		})	
-		
+		})   
+				
 		healthStore.executeQuery(q)	
 	}
 	
-	var healthStore = HKHealthStore() 
+	//
+	// Properties
+	//
 	
-	var observerQuery: HKObserverQuery = HKObserverQuery(sampleType: weightQuantityType, 
+	private let healthStore = HKHealthStore() 
+	
+	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: weightQuantityType, 
 														 predicate: nil,
 														 updateHandler: { (explicit: HKObserverQuery!, handler: HKObserverQueryCompletionHandler, error: NSError?) in
 		if let e = error {
 			NSLog("error: %@", error)
 		} else {
-			NSLog("updated!")
 			updateInfo()
 		}
 	})	
 
-	var weightQuantityType: HKQuantityType {
+	private var weightQuantityType: HKQuantityType {
 		get {
 			let identifier = HKQuantityTypeIdentifierBodyMass
 			return HKQuantityType.quantityTypeForIdentifier(identifier)!
 		}
 	}
 	
-	
+	//
+	// Outlets
+	//
 	
 	@IBOutlet weak var last: UILabel! 
 	@IBOutlet weak var newValue: UITextField!
+	
+	//
+	// Actions
+	//
 	
 	@IBAction func add(sender: Any?) {
 		
@@ -107,12 +106,9 @@ import HealthKit
 			return
 		}
 		
+		let date = NSDate.date		
 		let weight = HKQuantity.quantityWithUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo), doubleValue: newValue.text.doubleValue)
-		let meta = NSMutableDictionary()
-		//meta[HKMetadataKeyBodyMass] = KLBodyMassSensor
-		let date = NSDate.date
-		
-		let sample = HKQuantitySample.quantitySampleWithType(weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: meta)
+		let sample = HKQuantitySample.quantitySampleWithType(weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
 		
 		healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
 		
@@ -120,12 +116,12 @@ import HealthKit
 				NSLog("error: %@", error)
 			} else {
 				NSLog("value added.")
-				newValue.text = ""
+				dispatch_async(dispatch_get_main_queue()) {
+					newValue.text = ""
+				}
 				updateInfo()
 			}
 			
-		})
-		
+		})  
 	}
-
 }
