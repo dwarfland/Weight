@@ -72,6 +72,8 @@
         <None Include="Resources\App Icons\App-512.png"/>
         <None Include="Resources\App Icons\App-1024.png"/>
         <AppResource Include="Resources\Launch Images\Default-568h@2x.png"/>
+        <Compile Include="GraphViewController.swift"/>
+        <Compile Include="GraphView.swift"/>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Oxygene\RemObjects.Oxygene.Nougat.targets"/>
 </Project>

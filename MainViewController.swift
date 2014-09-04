@@ -6,10 +6,15 @@ import HealthKit
 	public override func viewDidLoad() {
 
 		super.viewDidLoad()
+		navigationController.navigationBar.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
 		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		let attributes = NSMutableDictionary()
 		attributes[NSForegroundColorAttributeName] = UIColor.colorWithRed(1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 		navigationController.navigationBar.titleTextAttributes = attributes
+
+		#if TARGET_IPHONE_SIMULATOR
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
+		#endif
 		
 		last.text = ""
 		newValue.becomeFirstResponder()
@@ -57,6 +62,9 @@ import HealthKit
 			} else {
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
+						if navigationItem.rightBarButtonItem == nil {
+							navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
+						}
 						last.text = NSString.stringWithFormat("Last was %@, %@.", results![0].quantity, relativeStringForDate(results![0].endDate)) 
 					}
 				}
@@ -70,7 +78,7 @@ import HealthKit
 	// Properties
 	//
 	
-	private let healthStore = HKHealthStore() 
+	public class let healthStore = HKHealthStore() 
 	
 	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: weightQuantityType, 
 														 predicate: nil,
@@ -82,10 +90,16 @@ import HealthKit
 		}
 	})	
 
-	private var weightQuantityType: HKQuantityType {
+	public class var weightQuantityType: HKQuantityType {
 		get {
 			let identifier = HKQuantityTypeIdentifierBodyMass
 			return HKQuantityType.quantityTypeForIdentifier(identifier)!
+		}
+	}
+	
+	public class var weightUnit: HKUnit {
+		get {
+			return HKUnit.gramUnitWithMetricPrefix(.Kilo)
 		}
 	}
 	
@@ -115,13 +129,18 @@ import HealthKit
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
-				NSLog("value added.")
 				dispatch_async(dispatch_get_main_queue()) {
 					newValue.text = ""
+					showDetails(nil)
+					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
 				}
 				updateInfo()
 			}
 			
 		})  
+	}
+	
+	@IBAction func showDetails(sendr: Any?) {
+		performSegueWithIdentifier("ShowDetails", sender: nil)
 	}
 }

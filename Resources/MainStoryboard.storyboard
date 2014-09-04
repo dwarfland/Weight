@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6205" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="upw-XD-ta5">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6206.9" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="upw-XD-ta5">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6198"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
+        <capability name="Constraints with attributes relative to the layout margin" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -79,11 +80,76 @@
                     <connections>
                         <outlet property="last" destination="In2-3e-0lt" id="faE-iC-q34"/>
                         <outlet property="newValue" destination="wZ2-3R-8i9" id="65b-SL-Fdo"/>
+                        <segue destination="OTR-bk-pJY" kind="show" identifier="ShowDetails" id="eZi-AK-KEI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d5b-75-7tW" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-227" y="-70"/>
+        </scene>
+        <!--Graph View Controller-->
+        <scene sceneID="WJr-0D-wiI">
+            <objects>
+                <viewController id="OTR-bk-pJY" customClass="GraphViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="OK7-vH-pHW"/>
+                        <viewControllerLayoutGuide type="bottom" id="0uq-bc-ysQ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="dNV-gh-vyN">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kuC-nO-DuL" customClass="GraphView">
+                                <rect key="frame" x="0.0" y="64" width="600" height="462"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="yYc-r1-EjZ">
+                                <rect key="frame" x="132" y="552" width="336" height="29"/>
+                                <segments>
+                                    <segment title="Week"/>
+                                    <segment title="Month"/>
+                                    <segment title="Year"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentsChanged:" destination="OTR-bk-pJY" eventType="valueChanged" id="UYv-mh-Uib"/>
+                                </connections>
+                            </segmentedControl>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="kuC-nO-DuL" secondAttribute="trailing" constant="-16" id="6La-as-7BJ"/>
+                            <constraint firstItem="kuC-nO-DuL" firstAttribute="top" secondItem="OK7-vH-pHW" secondAttribute="bottom" id="BpA-xM-UfG"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="kuC-nO-DuL" secondAttribute="trailing" constant="-16" id="LSh-mh-oeD"/>
+                            <constraint firstItem="kuC-nO-DuL" firstAttribute="leading" secondItem="dNV-gh-vyN" secondAttribute="leadingMargin" constant="-16" id="Nry-LT-gUU"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="yYc-r1-EjZ" secondAttribute="trailing" constant="116" id="Um4-c6-WNf"/>
+                            <constraint firstItem="kuC-nO-DuL" firstAttribute="top" secondItem="OK7-vH-pHW" secondAttribute="bottom" id="cLX-2z-q7C"/>
+                            <constraint firstItem="yYc-r1-EjZ" firstAttribute="top" secondItem="kuC-nO-DuL" secondAttribute="bottom" constant="20" id="eOK-qm-Ypu"/>
+                            <constraint firstAttribute="centerY" secondItem="yYc-r1-EjZ" secondAttribute="centerY" id="fQf-jW-KPO"/>
+                            <constraint firstItem="kuC-nO-DuL" firstAttribute="leading" secondItem="dNV-gh-vyN" secondAttribute="leadingMargin" constant="-16" id="gen-3U-Egs"/>
+                            <constraint firstItem="yYc-r1-EjZ" firstAttribute="top" secondItem="kuC-nO-DuL" secondAttribute="bottom" constant="20" id="pZJ-ck-a5R"/>
+                            <constraint firstAttribute="centerX" secondItem="yYc-r1-EjZ" secondAttribute="centerX" id="plL-Bd-0wp"/>
+                            <constraint firstItem="yYc-r1-EjZ" firstAttribute="leading" secondItem="dNV-gh-vyN" secondAttribute="leadingMargin" constant="20" id="t68-t1-U1w"/>
+                            <constraint firstItem="0uq-bc-ysQ" firstAttribute="top" secondItem="yYc-r1-EjZ" secondAttribute="bottom" constant="20" id="wXf-JG-8MW"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="BpA-xM-UfG"/>
+                                <exclude reference="LSh-mh-oeD"/>
+                                <exclude reference="gen-3U-Egs"/>
+                                <exclude reference="eOK-qm-Ypu"/>
+                                <exclude reference="fQf-jW-KPO"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="chartView" destination="kuC-nO-DuL" id="lPU-d9-5dk"/>
+                        <outlet property="segments" destination="yYc-r1-EjZ" id="jRc-K3-42q"/>
+                        <outlet property="view" destination="dNV-gh-vyN" id="Jww-9S-YNo"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gRt-iH-9bs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="474" y="-70"/>
         </scene>
     </scenes>
 </document>
