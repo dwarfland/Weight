@@ -4,8 +4,9 @@ import HealthKit
 @IBObject public class GraphViewController : UIViewController {
 
 	public override func viewDidLoad() {
+		title = "History"
 		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
-		segments.selectedSegmentIndex = 1; // todo. persist later, for now select Month
+		segments.selectedSegmentIndex = 1 // todo. persist later, for now select Month
 		updateData()
 	}
 	
@@ -13,7 +14,7 @@ import HealthKit
 	@IBOutlet var chartView: GraphView!
 	
 	@IBAction func segmentsChanged(sender: Any?) {
-		clearResults();
+		clearResults()
 		updateData()
 	}
 	
@@ -83,7 +84,7 @@ import HealthKit
 		var eveningValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 
 		let minusOneDayComps = NSDateComponents()
-		minusOneDayComps.day = -1;
+		minusOneDayComps.day = -1
 		
 		var date = NSDate.date
 		for var i = daysNeeded-1; i >= 0; i-- {
@@ -127,8 +128,8 @@ import HealthKit
 		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = morningValues;
-			chartView.evenings = eveningValues;
+			chartView.mornings = morningValues
+			chartView.evenings = eveningValues
 			chartView.dataChanged()
 		}
 		
@@ -136,10 +137,10 @@ import HealthKit
 	
 	private func limitResults(values: NSArray, byFactor factor: Int) -> NSMutableArray {
 		var result = NSMutableArray.arrayWithCapacity(values.count/factor)
-		var i = 0;
+		var i = 0
 		while i < values.count {
 			var average = 0.0
-			var valueCount = 0;
+			var valueCount = 0
 			for var j = 0; j < factor; j++ {
 				let s = values[i]
 				if s is HKQuantitySample {
@@ -147,7 +148,7 @@ import HealthKit
 					average += q
 					valueCount++
 				}
-				i++;
+				i++
 			}
 			if valueCount > 0 {
 				let weight = HKQuantity.quantityWithUnit(MainViewController.weightUnit, doubleValue: average/valueCount)
@@ -162,8 +163,8 @@ import HealthKit
 	
 	private func clearResults() {
 		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = nil;
-			chartView.evenings = nil;
+			chartView.mornings = nil
+			chartView.evenings = nil
 			chartView.dataChanged()
 		}
 	}

@@ -9,15 +9,15 @@ import HealthKit
 			drawGraphFor(mornings, withColor: UIColor.redColor.colorWithAlphaComponent(0.5))
 			drawGraphFor(evenings, withColor: UIColor.redColor)
 			
-			let font = UIFont.systemFontOfSize(10);
-			let minText = NSString.stringWithFormat("%0.1f%@", min, "kg");
-			UIColor.grayColor.`set`();
-			let minSize = minText.sizeWithFont(font);
-			minText.drawAtPoint(CGPointMake(startX, endY/*-minSize.height*/), withFont:font);
+			let font = UIFont.systemFontOfSize(10)
+			let minText = NSString.stringWithFormat("%0.1f%@", min, "kg")
+			UIColor.grayColor.`set`()
+			let minSize = minText.sizeWithFont(font)
+			minText.drawAtPoint(CGPointMake(startX, endY/*-minSize.height*/), withFont:font)
 
-			let maxText = NSString.stringWithFormat("%0.1f%@", max, "kg");
-			let maxSize = maxText.sizeWithFont(UIFont.systemFontOfSize(10));
-			maxText.drawAtPoint(CGPointMake(endX-maxSize.width, startY), withFont:font);
+			let maxText = NSString.stringWithFormat("%0.1f%@", max, "kg")
+			let maxSize = maxText.sizeWithFont(UIFont.systemFontOfSize(10))
+			maxText.drawAtPoint(CGPointMake(endX-maxSize.width, startY), withFont:font)
 		}
 	}
 	
@@ -42,7 +42,7 @@ import HealthKit
 		var i = 0
 		let bezierPath = UIBezierPath()
 		for i = 0; i < values.count; i++ {
-			var s = values[i];
+			var s = values[i]
 			if s is HKQuantitySample {
 
 				let point = pointForSample(s, atIndex: i)
@@ -86,7 +86,7 @@ import HealthKit
 		}
 		bezierPath.stroke()
 		
-		i = 0;
+		i = 0
 		for s in values {
 			if s is HKQuantitySample {
 				let point = pointForSample(s, atIndex: i)
