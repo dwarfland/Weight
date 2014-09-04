@@ -5,6 +5,7 @@ import HealthKit
 
 	public override func viewDidLoad() {
 		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
+		segments.selectedSegmentIndex = 1; // todo. persist later, for now select Month
 		updateData()
 	}
 	
@@ -12,6 +13,7 @@ import HealthKit
 	@IBOutlet var chartView: GraphView!
 	
 	@IBAction func segmentsChanged(sender: Any?) {
+		clearResults();
 		updateData()
 	}
 	
@@ -46,7 +48,9 @@ import HealthKit
 				break // Silver bug
 			case 1: daysNeeded = 31
 				break // Silver bug
-			case 2: daysNeeded = 365
+			case 2: daysNeeded = 93
+				break // Silver bug
+			case 3: daysNeeded = 360
 				break // Silver bug
 		}
 		
@@ -56,7 +60,6 @@ import HealthKit
 		var lastDateComps: NSDateComponents? = nil
 		
 		for val in values {
-		   //NSLog("value: %@", val)
 			
 			var sameDay = false
 			let newComps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day | NSCalendarUnit.Month | NSCalendarUnit.Year, fromDate: val.endDate)
@@ -108,8 +111,20 @@ import HealthKit
 			eveningValues.addObject(evening)
 		}
 		
-		NSLog("mornings = %@", morningValues)
-		NSLog("evenings = %@", eveningValues)
+		switch segments.selectedSegmentIndex {
+			case 0: daysNeeded = 7
+				break // Silver bug
+			case 1: daysNeeded = 31
+				break // Silver bug
+			case 2: daysNeeded = 93
+				morningValues = limitResults(morningValues, byFactor: 3)
+				eveningValues = limitResults(eveningValues, byFactor: 3)
+				break // Silver bug
+			case 3: daysNeeded = 365
+				morningValues = limitResults(morningValues, byFactor: 9)
+				eveningValues = limitResults(eveningValues, byFactor: 9)
+				break // Silver bug
+		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
 			chartView.mornings = morningValues;
@@ -119,7 +134,38 @@ import HealthKit
 		
 	}
 	
+	private func limitResults(values: NSArray, byFactor factor: Int) -> NSMutableArray {
+		var result = NSMutableArray.arrayWithCapacity(values.count/factor)
+		var i = 0;
+		while i < values.count {
+			var average = 0.0
+			var valueCount = 0;
+			for var j = 0; j < factor; j++ {
+				let s = values[i]
+				if s is HKQuantitySample {
+					let q = s.quantity.doubleValueForUnit(MainViewController.weightUnit)
+					average += q
+					valueCount++
+				}
+				i++;
+			}
+			if valueCount > 0 {
+				let weight = HKQuantity.quantityWithUnit(MainViewController.weightUnit, doubleValue: average/valueCount)
+				let dummySample = HKQuantitySample.quantitySampleWithType(MainViewController.weightQuantityType, quantity: weight, startDate: NSDate.date, endDate: NSDate.date, metadata: nil)
+				result.addObject(dummySample)
+			} else {
+				result.addObject(NSNull.null)
+			}
+		}
+		return result
+	}
+	
 	private func clearResults() {
+		dispatch_async(dispatch_get_main_queue()) {
+			chartView.mornings = nil;
+			chartView.evenings = nil;
+			chartView.dataChanged()
+		}
 	}
 
 }

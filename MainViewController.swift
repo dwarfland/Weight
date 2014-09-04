@@ -121,7 +121,7 @@ import HealthKit
 		}
 		
 		let date = NSDate.date		
-		let weight = HKQuantity.quantityWithUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo), doubleValue: newValue.text.doubleValue)
+		let weight = HKQuantity.quantityWithUnit(weightUnit, doubleValue: newValue.text.doubleValue)
 		let sample = HKQuantitySample.quantitySampleWithType(weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
 		
 		healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
@@ -131,7 +131,6 @@ import HealthKit
 			} else {
 				dispatch_async(dispatch_get_main_queue()) {
 					newValue.text = ""
-					showDetails(nil)
 					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
 				}
 				updateInfo()

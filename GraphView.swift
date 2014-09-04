@@ -6,20 +6,18 @@ import HealthKit
 	public override func drawRect(rect: CGRect) {
 		
 		if mornings != nil && evenings != nil {
-			drawGraphFor(mornings, withColor: UIColor.redColor)
-			drawGraphFor(evenings, withColor: UIColor.blueColor)
+			drawGraphFor(mornings, withColor: UIColor.redColor.colorWithAlphaComponent(0.5))
+			drawGraphFor(evenings, withColor: UIColor.redColor)
 			
 			let font = UIFont.systemFontOfSize(10);
 			let minText = NSString.stringWithFormat("%0.1f%@", min, "kg");
-			NSLog("minText %@", minText)
 			UIColor.grayColor.`set`();
 			let minSize = minText.sizeWithFont(font);
 			minText.drawAtPoint(CGPointMake(startX, endY/*-minSize.height*/), withFont:font);
 
 			let maxText = NSString.stringWithFormat("%0.1f%@", max, "kg");
-			NSLog("maxText %@", maxText)
 			let maxSize = maxText.sizeWithFont(UIFont.systemFontOfSize(10));
-			maxText.drawAtPoint(CGPointMake(endX-minSize.width, startY), withFont:font);
+			maxText.drawAtPoint(CGPointMake(endX-maxSize.width, startY), withFont:font);
 		}
 	}
 	
@@ -42,19 +40,52 @@ import HealthKit
 		color.setStroke()
 		
 		var i = 0
-		for s in values {
+		let bezierPath = UIBezierPath()
+		for i = 0; i < values.count; i++ {
+			var s = values[i];
 			if s is HKQuantitySample {
+
 				let point = pointForSample(s, atIndex: i)
-				if i > 0 {
-					var bezierPath = UIBezierPath()
-					bezierPath.moveToPoint(lastPoint)
+				if i == 0 {
+					bezierPath.moveToPoint(point)
+				}
+				else {
+
+					/*(var centerPoint = CGPointMake((lastPoint.x+point.x)/2, (lastPoint.y+point.y)/2)
+
+					if i+1 < values.count {
+						let nextPoint = pointForSample(s, atIndex: i)
+
+						if lastPoint.y < point.y && nextPoint.y > point.y {
+							centerPoint = CGPointMake(centerPoint.x, centerPoint.y+(ABS(point.y-centerPoint.y)))
+						} else {
+							centerPoint = CGPointMake(centerPoint.x, centerPoint.y+(ABS(point.y-centerPoint.y)))
+						//} else if lastPoint.y > point.y {
+						//	centerPoint = CGPointMake(centerPoint.x, centerPoint.y-(ABS(point.y-centerPoint.y)))
+						// }
+						}
+
+					}
+					else
+					{
+						// See if your curve is decreasing or increasing
+						// You can optimize it further by finding point on normal of line passing through midpoint
+			
+						if lastPoint.y < point.y {
+							centerPoint = CGPointMake(centerPoint.x, centerPoint.y+(ABS(point.y-centerPoint.y)))
+						} else if lastPoint.y > point.y {
+							centerPoint = CGPointMake(centerPoint.x, centerPoint.y-(ABS(point.y-centerPoint.y)))
+						}
+					}
+					bezierPath.addQuadCurveToPoint(point, controlPoint: centerPoint)*/
+			
 					bezierPath.addLineToPoint(point)
-					bezierPath.stroke()
 				}
 				lastPoint = point
 			}
-			i++
 		}
+		bezierPath.stroke()
+		
 		i = 0;
 		for s in values {
 			if s is HKQuantitySample {
@@ -100,7 +131,6 @@ import HealthKit
 			max = 0.0
 			for s in mornings {
 				if s is HKQuantitySample {
-					NSLog("s %@", s)
 					let q = s.quantity.doubleValueForUnit(MainViewController.weightUnit)
 					max = MAX(max, q)
 					min = MIN(min, q)

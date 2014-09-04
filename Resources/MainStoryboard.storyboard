@@ -108,6 +108,7 @@
                                 <segments>
                                     <segment title="Week"/>
                                     <segment title="Month"/>
+                                    <segment title="Quarter"/>
                                     <segment title="Year"/>
                                 </segments>
                                 <connections>
