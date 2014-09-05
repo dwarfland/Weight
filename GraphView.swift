@@ -40,14 +40,16 @@ import HealthKit
 		color.setStroke()
 		
 		var i = 0
+		var first= true
 		let bezierPath = UIBezierPath()
 		for i = 0; i < values.count; i++ {
 			var s = values[i]
 			if s is HKQuantitySample {
 
 				let point = pointForSample(s, atIndex: i)
-				if i == 0 {
+				if first {
 					bezierPath.moveToPoint(point)
+					first = false
 				}
 				else {
 
