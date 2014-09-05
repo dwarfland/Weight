@@ -10,12 +10,12 @@ import HealthKit
 			drawGraphFor(evenings, withColor: UIColor.redColor)
 			
 			let font = UIFont.systemFontOfSize(10)
-			let minText = NSString.stringWithFormat("%0.1f%@", min, "kg")
+			let minText = NSString.stringWithFormat("%0.1f%@", min, MainViewController.weightUnit.unitString)
 			UIColor.grayColor.`set`()
 			let minSize = minText.sizeWithFont(font)
 			minText.drawAtPoint(CGPointMake(startX, endY/*-minSize.height*/), withFont:font)
 
-			let maxText = NSString.stringWithFormat("%0.1f%@", max, "kg")
+			let maxText = NSString.stringWithFormat("%0.1f%@", max, MainViewController.weightUnit.unitString)
 			let maxSize = maxText.sizeWithFont(UIFont.systemFontOfSize(10))
 			maxText.drawAtPoint(CGPointMake(endX-maxSize.width, startY), withFont:font)
 		}

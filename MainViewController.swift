@@ -16,7 +16,7 @@ import HealthKit
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
 		#endif
 		
-		last.text = ""
+		last.text = weightUnit.unitString
 		newValue.becomeFirstResponder()
 		
 		let types = NSSet.setWithObject(weightQuantityType)
@@ -65,7 +65,7 @@ import HealthKit
 						if navigationItem.rightBarButtonItem == nil {
 							navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
 						}
-						last.text = NSString.stringWithFormat("Last was %@, %@.", results![0].quantity, relativeStringForDate(results![0].endDate)) 
+						last.text = NSString.stringWithFormat("Last was %0.1f%@, %@.", results![0].quantity.doubleValueForUnit(weightUnit), weightUnit.unitString, relativeStringForDate(results![0].endDate)) 
 					}
 				}
 			}
@@ -99,7 +99,11 @@ import HealthKit
 	
 	public class var weightUnit: HKUnit {
 		get {
-			return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+			if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem).boolValue {
+				return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+			} else {
+				return HKUnit.poundUnit
+			}			
 		}
 	}
 	
