@@ -145,6 +145,15 @@ import HealthKit
 					min = MIN(min, q)
 				}
 			}
+			if max == min {
+				max = min+0.5
+				min = min-0.5;
+			}
+			else if max < min+5
+			{
+				max = max+2.5;
+				min = min-2.5;
+			}
 		}
 		setNeedsDisplay()
 	}
