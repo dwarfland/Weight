@@ -30,7 +30,7 @@ import HealthKit
 				UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
 				maxBezierPath.stroke()
 	
-				let maxText = NSString.stringWithFormat("%0.1f%@", realMin, MainViewController.weightUnit.unitString)
+				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, MainViewController.weightUnit.unitString)
 				UIColor.grayColor.`set`()
 				let maxSize = maxText.sizeWithFont(font)
 				maxText.drawAtPoint(CGPointMake(endX-maxSize.width, maxY-maxSize.height-1), withFont:font)
