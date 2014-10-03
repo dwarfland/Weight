@@ -57,7 +57,9 @@ import HealthKit
 		
 		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var evenings = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var lastValue: HKSample?
+		var lowest = NSMutableArray.arrayWithCapacity(daysNeeded)
+		var lastValue: HKQuantitySample?
+		var lowestValue: HKQuantitySample?
 		var lastDateComps: NSDateComponents? = nil
 		
 		for val in values {
@@ -75,13 +77,23 @@ import HealthKit
 				} else {
 					// first value ever
 				}
+				if lowestValue != nil {
+					lowest.addObject(lowestValue!)
+					lowestValue = nil
+				} else {
+					// first value ever
+				}
 				evenings.addObject(val)
 			}
 			lastValue = val
+			if lowestValue == nil || lowestValue!.quantity.doubleValueForUnit(MainViewController.weightUnit) > val.quantity.doubleValueForUnit(MainViewController.weightUnit) {
+				lowestValue = val;
+			}
 		}
 		
 		var morningValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var eveningValues = NSMutableArray.arrayWithCapacity(daysNeeded)
+		var lowestValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 
 		let minusOneDayComps = NSDateComponents()
 		minusOneDayComps.day = -1
@@ -94,6 +106,7 @@ import HealthKit
 			
 			var morning: Any = NSNull.null
 			var evening: Any = NSNull.null
+			var lowestVal: Any = NSNull.null
 			for m in mornings {
 				let newComps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day | NSCalendarUnit.Month | NSCalendarUnit.Year, fromDate: m.endDate)
 				if newComps.day == dateComps.day && newComps.month == dateComps.month && newComps.year == dateComps.year {
@@ -108,8 +121,16 @@ import HealthKit
 					break
 				}
 			}
+			for l in lowest {
+				let newComps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day | NSCalendarUnit.Month | NSCalendarUnit.Year, fromDate: l.endDate)
+				if newComps.day == dateComps.day && newComps.month == dateComps.month && newComps.year == dateComps.year {
+					lowestVal = l
+					break
+				}
+			}
 			morningValues.addObject(morning)
 			eveningValues.addObject(evening)
+			lowestValues.addObject(lowestVal)
 		}
 		
 		switch segments.selectedSegmentIndex {
@@ -120,16 +141,23 @@ import HealthKit
 			case 2: daysNeeded = 93
 				morningValues = limitResults(morningValues, byFactor: 3)
 				eveningValues = limitResults(eveningValues, byFactor: 3)
+				lowestValues = limitResults(lowestValues, byFactor: 3)
 				break // Silver bug
 			case 3: daysNeeded = 365
 				morningValues = limitResults(morningValues, byFactor: 9)
 				eveningValues = limitResults(eveningValues, byFactor: 9)
+				lowestValues = limitResults(lowestValues, byFactor: 9)
 				break // Silver bug
 		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
 			chartView.mornings = morningValues
 			chartView.evenings = eveningValues
+			if segments.selectedSegmentIndex < 2 {
+				chartView.lowest = lowestValues
+			} else {
+				chartView.lowest = nil
+			}
 			chartView.dataChanged()
 		}
 		

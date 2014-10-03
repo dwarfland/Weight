@@ -5,33 +5,97 @@ import HealthKit
 
 	public override func drawRect(rect: CGRect) {
 		
+		let font = UIFont.systemFontOfSize(10)
+		
 		if mornings != nil && evenings != nil {
-			drawGraphFor(mornings, withColor: UIColor.redColor.colorWithAlphaComponent(0.5))
-			drawGraphFor(evenings, withColor: UIColor.redColor)
-			
-			let font = UIFont.systemFontOfSize(10)
-			let minText = NSString.stringWithFormat("%0.1f%@", min, MainViewController.weightUnit.unitString)
+
+
+			let minY = yOffsetForValue(realMin)
+			let minBezierPath = UIBezierPath()
+			minBezierPath.moveToPoint(CGPointMake(startX, minY))
+			minBezierPath.addLineToPoint(CGPointMake(endX, minY))
+			UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
+			minBezierPath.stroke()
+
+			let minText = NSString.stringWithFormat("%0.1f%@", realMin, MainViewController.weightUnit.unitString)
 			UIColor.grayColor.`set`()
 			let minSize = minText.sizeWithFont(font)
-			minText.drawAtPoint(CGPointMake(startX, endY/*-minSize.height*/), withFont:font)
+			minText.drawAtPoint(CGPointMake(startX, minY+1), withFont:font)
+			
+			if (realMax > realMin+0.1) {
+				let maxY = yOffsetForValue(realMax)
+				let maxBezierPath = UIBezierPath()
+				maxBezierPath.moveToPoint(CGPointMake(startX, maxY))
+				maxBezierPath.addLineToPoint(CGPointMake(endX, maxY))
+				UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
+				maxBezierPath.stroke()
+	
+				let maxText = NSString.stringWithFormat("%0.1f%@", realMin, MainViewController.weightUnit.unitString)
+				UIColor.grayColor.`set`()
+				let maxSize = maxText.sizeWithFont(font)
+				maxText.drawAtPoint(CGPointMake(endX-maxSize.width, maxY-maxSize.height-1), withFont:font)
+			}
 
-			let maxText = NSString.stringWithFormat("%0.1f%@", max, MainViewController.weightUnit.unitString)
-			let maxSize = maxText.sizeWithFont(UIFont.systemFontOfSize(10))
-			maxText.drawAtPoint(CGPointMake(endX-maxSize.width, startY), withFont:font)
+			if lowest != nil {
+				drawGraphFor(lowest, withColor: UIColor.greenColor)
+			}
+			drawGraphFor(mornings, withColor: UIColor.redColor)//.colorWithAlphaComponent(0.5))
+			drawGraphFor(evenings, withColor: UIColor.blueColor)
 		}
+
+		var left = startX;
+		var s = "first"
+		UIColor.redColor.`set`()
+		var size = s.sizeWithFont(UIFont.systemFontOfSize(10));
+		s.drawAtPoint(CGPointMake(left, startY), withFont:font);
+		left += size.width;
+
+		s = " / "
+		UIColor.grayColor.`set`()
+		size = s.sizeWithFont(UIFont.systemFontOfSize(10))
+		s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+		left += size.width;
+
+		s = "last"
+		UIColor.blueColor.`set`()
+		size = s.sizeWithFont(UIFont.systemFontOfSize(10))
+		s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+		left += size.width;
+
+		if lowest != nil {
+			s = " / "
+			UIColor.grayColor.`set`()
+			size = s.sizeWithFont(UIFont.systemFontOfSize(10))
+			s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+			left += size.width;
+	
+			s = "lowest"
+			UIColor.greenColor.`set`()
+			size = s.sizeWithFont(UIFont.systemFontOfSize(10))
+			s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+		}
+		/*let size1 = "first ".sizeWithFont(UIFont.systemFontOfSize(10));
+		"first ".drawAtPoint(CGPointMake(startX, startY), withFont:font);
+		let size2 = "last ".sizeWithFont(UIFont.systemFontOfSize(10))
+		"last ".drawAtPoint(CGPointMake(startX+size1.width, startY), withFont:font)
+		let size3 = "last ".sizeWithFont(UIFont.systemFontOfSize(10))
+		"last ".drawAtPoint(CGPointMake(startX+size1.width+size.width, startY), withFont:font)*/
 	}
 	
 	func pointForSample(s: HKQuantitySample, atIndex i: Int) -> CGPoint{
+		var y = yOffsetForValue(s.quantity.doubleValueForUnit(MainViewController.weightUnit))
+		var x = endX - i*offsetX
 		
-		var  y = s.quantity.doubleValueForUnit(MainViewController.weightUnit)
+		return CGPointMake(x,y)	
+	}
+	
+	func yOffsetForValue(v: CGFloat) -> CGFloat {
+		var  y = v
 		y -= min
 		y = sizeY - y / (max-min) * sizeY
 		y += FRAME_SIZE
+		return y
 		
-		var x = endX - i*offsetX
-		
-		return CGPointMake(x,y)
-	
 	}
 	
 	private func drawGraphFor(values: NSArray, withColor color: UIColor) {
@@ -103,6 +167,7 @@ import HealthKit
 	
 	var mornings: NSArray!
 	var evenings: NSArray!
+	var lowest: NSArray!
 
 	private var startX: CGFloat
 	private var startY: CGFloat
@@ -115,6 +180,8 @@ import HealthKit
 
 	private var min: CGFloat
 	private var max: CGFloat
+	private var realMin: CGFloat
+	private var realMax: CGFloat
 	private var sizeX: CGFloat
 	private var sizeY: CGFloat
 	
@@ -145,6 +212,8 @@ import HealthKit
 					min = MIN(min, q)
 				}
 			}
+			realMin = min
+			realMax = max
 			if max == min {
 				max = min+0.5
 				min = min-0.5;

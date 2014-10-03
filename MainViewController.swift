@@ -78,7 +78,7 @@ import HealthKit
 	// Properties
 	//
 	
-	public class let healthStore = HKHealthStore() 
+	public class let healthStore: HKHealthStore = HKHealthStore() 
 	
 	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: weightQuantityType, 
 														 predicate: nil,
@@ -107,6 +107,19 @@ import HealthKit
 		}
 	}
 	
+	/*public lazy class var weightQuantityType: HKQuantityType! = {  // bugs:69465: Silver: lazy proper should not require to be nullable?
+		let identifier = HKQuantityTypeIdentifierBodyMass
+		return HKQuantityType.quantityTypeForIdentifier(identifier)!
+	}()
+	
+	public lazy class var weightUnit: HKUnit! = { // bugs:69465: Silver: lazy proper should not require to be nullable?
+		if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem).boolValue {
+			return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+		} else {
+			return HKUnit.poundUnit
+		}			
+	}()*/
+	
 	//
 	// Outlets
 	//
@@ -125,7 +138,7 @@ import HealthKit
 		}
 		
 		let date = NSDate.date		
-		let weight = HKQuantity.quantityWithUnit(weightUnit, doubleValue: newValue.text.doubleValue)
+		let weight = HKQuantity.quantityWithUnit(weightUnit, doubleValue: newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
 		let sample = HKQuantitySample.quantitySampleWithType(weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
 		
 		healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
