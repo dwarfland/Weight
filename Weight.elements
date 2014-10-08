@@ -19,6 +19,7 @@
         <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
         <EnableAsserts>False</EnableAsserts>
         <GenerateDebugInfo>True</GenerateDebugInfo>
+        <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>

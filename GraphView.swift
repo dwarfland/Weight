@@ -41,6 +41,41 @@ import HealthKit
 			}
 			drawGraphFor(mornings, withColor: UIColor.redColor)//.colorWithAlphaComponent(0.5))
 			drawGraphFor(evenings, withColor: UIColor.blueColor)
+			
+			if lowest != nil {
+				var morningString = diffStringBetweenOldValue(mornings[1], newValue: mornings[0])
+				var eveningString = diffStringBetweenOldValue(evenings[1], newValue: evenings[0])
+
+				if length(morningString) > 0 {
+					morningString += " "
+				}
+								
+				var totalString = morningString
+				totalString += eveningString
+				
+				NSLog("morningString %@", morningString)
+				NSLog("eveningString %@", eveningString)
+				NSLog("totalString %@", totalString)
+				
+				if length(totalString) > 0 {
+				 
+					let totalSize = totalString.sizeWithFont(font)
+					var leftX = (frame.size.width-totalSize.width)/2
+						
+					if morningString != nil {
+						let leftSize = morningString.sizeWithFont(font)
+						UIColor.redColor.`set`
+						morningString.drawAtPoint(CGPointMake(leftX, minY+1), withFont:font)
+						leftX += leftSize.width
+					}   
+					if eveningString != nil {
+						UIColor.blueColor.`set`
+						eveningString.drawAtPoint(CGPointMake(leftX, minY+1), withFont:font)
+					}   
+				}
+				
+			}
+			
 		}
 
 		var left = startX;
@@ -80,6 +115,24 @@ import HealthKit
 		"last ".drawAtPoint(CGPointMake(startX+size1.width, startY), withFont:font)
 		let size3 = "last ".sizeWithFont(UIFont.systemFontOfSize(10))
 		"last ".drawAtPoint(CGPointMake(startX+size1.width+size.width, startY), withFont:font)*/
+	}
+	
+	func diffStringBetweenOldValue(oldValue: id, newValue: id) -> String! {
+		
+		if (newValue != NSNull.null && oldValue != NSNull.null) {
+		 
+			let m0 = (newValue.quantity.doubleValueForUnit(MainViewController.weightUnit)*10).intValue
+			let m1 = (oldValue.quantity.doubleValueForUnit(MainViewController.weightUnit)*10).intValue
+			NSLog("m0 %d, m1 %d", m0, m1)
+			if m0 < m1 {
+				return NSString.stringWithFormat("-%.1f", (m1-m0).doubleValue/10)
+			} else if m0 > m1 {
+				return NSString.stringWithFormat("+%.1f", (m0-m1).doubleValue/10)
+			} else {
+				return "±0"
+			}
+		}
+		return nil
 	}
 	
 	func pointForSample(s: HKQuantitySample, atIndex i: Int) -> CGPoint{
