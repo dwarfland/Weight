@@ -117,7 +117,7 @@ import HealthKit
 		"last ".drawAtPoint(CGPointMake(startX+size1.width+size.width, startY), withFont:font)*/
 	}
 	
-	func diffStringBetweenOldValue(oldValue: id, newValue: id) -> String! {
+	func diffStringBetweenOldValue(_ oldValue: id, newValue: id) -> String! { //TODO: drop _
 		
 		if (newValue != NSNull.null && oldValue != NSNull.null) {
 		 
@@ -135,7 +135,7 @@ import HealthKit
 		return nil
 	}
 	
-	func pointForSample(s: HKQuantitySample, atIndex i: Int) -> CGPoint{
+	func pointForSample(_ s: HKQuantitySample, atIndex i: Int) -> CGPoint{ //TODO: drop _
 		var y = yOffsetForValue(s.quantity.doubleValueForUnit(MainViewController.weightUnit))
 		var x = endX - i*offsetX
 		
@@ -151,8 +151,8 @@ import HealthKit
 		
 	}
 	
-	private func drawGraphFor(values: NSArray, withColor color: UIColor) {
-		var lastPoint: CGPoint
+	private func drawGraphFor(_ values: NSArray, withColor color: UIColor) { //TODO: drop _
+		//var lastPoint: CGPoint = CGPointMake(0.0, 0.0)
 		UIColor.whiteColor.setFill()
 		color.setStroke()
 		
@@ -200,7 +200,7 @@ import HealthKit
 			
 					bezierPath.addLineToPoint(point)
 				}
-				lastPoint = point
+				//lastPoint = point
 			}
 		}
 		bezierPath.stroke()
@@ -212,7 +212,7 @@ import HealthKit
 				let ovalPath = UIBezierPath.bezierPathWithOvalInRect(CGRectMake(point.x-CIRCLE_SIZE, point.y-CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2)) // silver bug!
 				ovalPath.fill()
 				ovalPath.stroke()
-				lastPoint = point
+				//lastPoint = point
 			}
 			i++
 		}
@@ -222,21 +222,21 @@ import HealthKit
 	var evenings: NSArray!
 	var lowest: NSArray!
 
-	private var startX: CGFloat
-	private var startY: CGFloat
-	private var offsetX: CGFloat
-	private var endY: CGFloat
-	private var endX: CGFloat
+	private var startX: CGFloat = 0
+	private var startY: CGFloat = 0
+	private var offsetX: CGFloat = 0
+	private var endY: CGFloat = 0
+	private var endX: CGFloat = 0
 	
 	let FRAME_SIZE = 20
 	let CIRCLE_SIZE = 2.5
 
-	private var min: CGFloat
-	private var max: CGFloat
-	private var realMin: CGFloat
-	private var realMax: CGFloat
-	private var sizeX: CGFloat
-	private var sizeY: CGFloat
+	private var min: CGFloat = 0
+	private var max: CGFloat = 0
+	private var realMin: CGFloat = 0
+	private var realMax: CGFloat = 0
+	private var sizeX: CGFloat = 0
+	private var sizeY: CGFloat = 0
 	
 	public func dataChanged() {
 		if mornings?.count > 0 {
@@ -275,6 +275,12 @@ import HealthKit
 			{
 				max = max+2.5;
 				min = min-2.5;
+			}
+			else
+			{
+				let diff = max-min
+				max = max+diff/1.75
+				min = min-diff/1.75
 			}
 		}
 		setNeedsDisplay()

@@ -54,7 +54,6 @@
     <ItemGroup>
         <Compile Include="AppDelegate.swift"/>
         <Compile Include="MainViewController.swift"/>
-        <Compile Include="Program.swift"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="Resources\Info.plist"/>

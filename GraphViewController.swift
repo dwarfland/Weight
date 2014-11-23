@@ -163,7 +163,7 @@ import HealthKit
 		
 	}
 	
-	private func limitResults(values: NSArray, byFactor factor: Int) -> NSMutableArray {
+	private func limitResults(_ values: NSArray, byFactor factor: Int) -> NSMutableArray { //TODO: drop _
 		var result = NSMutableArray.arrayWithCapacity(values.count/factor)
 		var i = 0
 		while i < values.count {

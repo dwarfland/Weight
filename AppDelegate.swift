@@ -1,6 +1,6 @@
 ﻿import UIKit
 
-@IBObject public class AppDelegate : IUIApplicationDelegate {
+@UIApplicationMain @IBObject public class AppDelegate : IUIApplicationDelegate {
 
 	var window : UIWindow?
 
