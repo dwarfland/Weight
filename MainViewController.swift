@@ -143,25 +143,26 @@ import HealthKit
 	}
 	
 	public func getBMI(callback: (Double, String) -> () = nil) {
-		NSLog("getBMI")
-		getWeight() { weight in 
-			getHeight() { height in 
 
-				if navigationItem.rightBarButtonItem == nil {
-					navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
-				}
+		getWeight() { weight in 
+
+			if navigationItem.rightBarButtonItem == nil {
+				navigationItem.rightBarButtonItem = UIBarButtonItem(title: "History", style: .Plain, target: self, action: "showDetails:")
+			}
+
+			getHeight() { height in 
 
 				let weightInKg = weight.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
 				let bmi = calculateBMIFromWeight(weightInKg, height: heightInM)
-				NSLog("weight: %f, height: %f, bmi: %f", weightInKg, heightInM, bmi)
+				//NSLog("weight: %f, height: %f, bmi: %f", weightInKg, heightInM, bmi)
 				last.text = NSString.stringWithFormat("%0.1f%@, %@ (BMI %0.2f).", weight.quantity.doubleValueForUnit(weightUnit), weightUnit.unitString, relativeStringForDate(weight.endDate), bmi)
 			}
 			last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(weightUnit), weightUnit.unitString, relativeStringForDate(weight.endDate)) 
 		}
 	}
 	
-	func calculateBMIFromWeight(_ weight: Double, height: Double) -> Double {
+	func calculateBMIFromWeight(weight: Double, height: Double) -> Double {
 		return weight / (height*height)
 	}
 	
