@@ -4,12 +4,21 @@ import HealthKit
 @IBObject public class GraphViewController : UIViewController {
 
 	public override func viewDidLoad() {
-		title = "History"
+		title = "Chart"
 		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		segments.selectedSegmentIndex = 1 // todo. persist later, for now select Month
+
+		if navigationItem.rightBarButtonItem == nil {
+			navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Numbers", style: .Plain, target: self, action: "showNumbers:")
+		}
+
 		updateData()
 	}
 	
+	@IBAction func showNumbers(sendr: Any?) {
+		performSegueWithIdentifier("ShowNumbers", sender: nil)
+	}
+
 	@IBOutlet var segments: UISegmentedControl!
 	@IBOutlet var chartView: GraphView!
 	

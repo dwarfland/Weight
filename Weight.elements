@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
     <PropertyGroup>
         <ProjectGuid>2FFAE269-937F-4DC2-9DD4-E2EF6BB64817</ProjectGuid>
-        <OutputType>executable</OutputType>
+        <OutputType>Executable</OutputType>
         <AssemblyName>Weight</AssemblyName>
         <AllowGlobals>False</AllowGlobals>
         <AllowLegacyWith>False</AllowLegacyWith>
@@ -14,7 +14,7 @@
         <CreateAppBundle>True</CreateAppBundle>
         <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
         <CodesignCertificateName>iPhone Developer: marc hoffman (K2YTD84U6W)</CodesignCertificateName>
-        <ProvisioningProfile>937a5f23-8a4a-48fa-962b-8f04a524d914</ProvisioningProfile>
+        <ProvisioningProfile>b741ea44-0b8b-4707-907a-abc690ff1a2c</ProvisioningProfile>
         <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
         <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
         <EnableAsserts>False</EnableAsserts>
@@ -39,7 +39,7 @@
         <CreateIPA>True</CreateIPA>
         <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
         <ProvisioningProfileName>Weight App Store</ProvisioningProfileName>
-        <ProvisioningProfile>c8acf6ca-f757-4641-9a4c-16c63292ecc9</ProvisioningProfile>
+        <ProvisioningProfile>74dbdb49-c2dc-49ee-9b50-3b21f3923f60</ProvisioningProfile>
         <GenerateDSym>True</GenerateDSym>
     </PropertyGroup>
     <ItemGroup>
@@ -77,6 +77,8 @@
         <Compile Include="GraphViewController.swift"/>
         <Compile Include="GraphView.swift"/>
         <Storyboard Include="Resources\Launch.storyboard"/>
+        <AppResource Include="Resources\Settings.bundle"/>
+        <Compile Include="NumbersViewController.swift"/>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Oxygene\RemObjects.Oxygene.Nougat.targets"/>
 </Project>
