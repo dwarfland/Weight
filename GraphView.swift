@@ -9,6 +9,10 @@ import HealthKit
 		
 		if mornings != nil && evenings != nil {
 
+			var blueAttributes:  NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.blueColor]
+			var redAttributes:   NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.redColor]
+			var greenAttributes: NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.greenColor]
+			var grayAttributes:  NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.grayColor]
 
 			let minY = yOffsetForValue(realMin)
 			let minBezierPath = UIBezierPath()
@@ -19,8 +23,8 @@ import HealthKit
 
 			let minText = NSString.stringWithFormat("%0.1f%@", realMin, MainViewController.weightUnit.unitString)
 			UIColor.grayColor.`set`()
-			let minSize = minText.sizeWithFont(font)
-			minText.drawAtPoint(CGPointMake(startX, minY+1), withFont:font)
+			//let minSize = minText.sizeWithAttributes(grayAttributes)
+			minText.drawAtPoint(CGPointMake(startX, minY+1), withAttributes: grayAttributes)
 			
 			if (realMax > realMin+0.1) {
 				let maxY = yOffsetForValue(realMax)
@@ -31,9 +35,8 @@ import HealthKit
 				maxBezierPath.stroke()
 	
 				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, MainViewController.weightUnit.unitString)
-				UIColor.grayColor.`set`()
-				let maxSize = maxText.sizeWithFont(font)
-				maxText.drawAtPoint(CGPointMake(endX-maxSize.width, maxY-maxSize.height-1), withFont:font)
+				let maxSize = maxText.sizeWithAttributes(grayAttributes)
+				maxText.drawAtPoint(CGPointMake(endX-maxSize.width, maxY-maxSize.height-1), withAttributes: grayAttributes)
 			}
 
 			if lowest != nil {
@@ -59,55 +62,50 @@ import HealthKit
 				
 				if length(totalString) > 0 {
 				 
-					let totalSize = totalString.sizeWithFont(font)
+					let totalSize = totalString.sizeWithAttributes(grayAttributes)
 					var leftX = (frame.size.width-totalSize.width)/2
 						
 					if morningString != nil {
-						let leftSize = morningString.sizeWithFont(font)
-						UIColor.redColor.`set`
-						morningString.drawAtPoint(CGPointMake(leftX, minY+1), withFont:font)
+						let leftSize = morningString.sizeWithAttributes(redAttributes)
+						morningString.drawAtPoint(CGPointMake(leftX, minY+1), withAttributes: redAttributes)
 						leftX += leftSize.width
 					}   
 					if eveningString != nil {
-						UIColor.blueColor.`set`
-						eveningString.drawAtPoint(CGPointMake(leftX, minY+1), withFont:font)
+						eveningString.drawAtPoint(CGPointMake(leftX, minY+1),withAttributes: blueAttributes)
 					}   
 				}
 				
 			}
 			
-		}
-
-		var left = startX;
-		var s = "first"
-		UIColor.redColor.`set`()
-		var size = s.sizeWithFont(UIFont.systemFontOfSize(10));
-		s.drawAtPoint(CGPointMake(left, startY), withFont:font);
-		left += size.width;
-
-		s = " / "
-		UIColor.grayColor.`set`()
-		size = s.sizeWithFont(UIFont.systemFontOfSize(10))
-		s.drawAtPoint(CGPointMake(left, startY), withFont:font)
-		left += size.width;
-
-		s = "last"
-		UIColor.blueColor.`set`()
-		size = s.sizeWithFont(UIFont.systemFontOfSize(10))
-		s.drawAtPoint(CGPointMake(left, startY), withFont:font)
-		left += size.width;
-
-		if lowest != nil {
-			s = " / "
-			UIColor.grayColor.`set`()
-			size = s.sizeWithFont(UIFont.systemFontOfSize(10))
-			s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+			//
+			// legend
+			//
+			var left = startX;
+			var s = "first"
+			var size = s.sizeWithAttributes(redAttributes)
+			s.drawAtPoint(CGPointMake(left, startY), withAttributes: redAttributes)
 			left += size.width;
 	
-			s = "lowest"
-			UIColor.greenColor.`set`()
-			size = s.sizeWithFont(UIFont.systemFontOfSize(10))
-			s.drawAtPoint(CGPointMake(left, startY), withFont:font)
+			s = " / "
+			size = s.sizeWithAttributes(grayAttributes)
+			s.drawAtPoint(CGPointMake(left, startY), withAttributes: grayAttributes)
+			left += size.width;
+	
+			s = "last"
+			size = s.sizeWithAttributes(blueAttributes)
+			s.drawAtPoint(CGPointMake(left, startY), withAttributes: blueAttributes)
+			left += size.width;
+	
+			if lowest != nil {
+				s = " / "
+				size = s.sizeWithAttributes(grayAttributes)
+				s.drawAtPoint(CGPointMake(left, startY), withAttributes: grayAttributes)
+				left += size.width;
+		
+				s = "lowest"
+				size = s.sizeWithAttributes(greenAttributes)
+				s.drawAtPoint(CGPointMake(left, startY), withAttributes: greenAttributes)
+			}
 		}
 		/*let size1 = "first ".sizeWithFont(UIFont.systemFontOfSize(10));
 		"first ".drawAtPoint(CGPointMake(startX, startY), withFont:font);
