@@ -212,8 +212,8 @@ import HealthKit
 						// adjust for females, based on http://www.bmi-rechner.net
 						//
 						if sex == HKBiologicalSex.Female {
-							if effectiveBmiValue < 30 {
-								effectiveBmiValue--;
+							if effectiveBmiValue < 28 { // anything below 30 is one less for females
+								effectiveBmiValue++;
 							}
 						}
 						 
@@ -221,17 +221,17 @@ import HealthKit
 						// adjust for age, based on http://www.bmi-rechner.net
 						//
 						if age <= 24 {
-							effectiveBmiValue--;
+							effectiveBmiValue++;
 						} else if age <= 34 {
 							// keep
 						} else if age <= 44 {
-							effectiveBmiValue += 1;
+							effectiveBmiValue -= 1;
 						} else if age <= 54 {
-							effectiveBmiValue += 2;
+							effectiveBmiValue -= 2;
 						} else if age <= 64 {
-							effectiveBmiValue += 3;
+							effectiveBmiValue -= 3;
 						} else {
-							effectiveBmiValue += 4;
+							effectiveBmiValue -= 4;
 						}
 						
 						NSLog("effectiveBmiValue: %f", effectiveBmiValue)
