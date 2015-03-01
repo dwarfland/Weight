@@ -6,6 +6,7 @@ import HealthKit
 	public override func viewDidLoad() {
 
 		super.viewDidLoad()
+		
 		navigationController.navigationBar.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
 		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		let attributes = NSMutableDictionary()
@@ -16,29 +17,32 @@ import HealthKit
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
 		#endif
 		
-		last.text = weightUnit.unitString
+		last.text = DataAccess.weightUnit.unitString
 		bmi.text = "  "
 		info.text = "  "
 		newValue.becomeFirstResponder()
 		
-		let readTypes = NSSet.setWithObjects(weightQuantityType, heightQuantityType, dateOfBirthCharacteristicType, biologicalSexCharacteristicType, nil)
-		let writeTypes = NSSet.setWithObjects(weightQuantityType, bmiQuantityType, nil)
-		healthStore.requestAuthorizationToShareTypes(writeTypes, readTypes: readTypes, completion: { success, error in 
+		let readTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, heightQuantityType, dateOfBirthCharacteristicType, biologicalSexCharacteristicType, nil)
+		let writeTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, bmiQuantityType, nil)
+		DataAccess.healthStore.requestAuthorizationToShareTypes(writeTypes, readTypes: readTypes, completion: { success, error in 
+
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
 				getBMI() // temp for testing
 				//updateInfo()
-				healthStore.executeQuery(observerQuery)
+				DataAccess.healthStore.executeQuery(observerQuery)
 			}
 		})
 		title = "Weight"
+		
+		//view.addGestureRecognizer(UISwipeGestureRecognizer());
 	}
 	
 	func relativeStringForDate(date: NSDate) -> String {
 		
-		let comps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day|NSCalendarUnit.Month.Year, fromDate: date)
-		let nowComps = NSCalendar.currentCalendar.components(NSCalendarUnit.Day|NSCalendarUnit.Month.Year, fromDate: NSDate.date)
+		let comps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: date)
+		let nowComps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: NSDate.date)
 		let diff = -date.timeIntervalSinceNow
 		//NSLog("date diff: %f", diff)
 		if diff < 5*60 {
@@ -57,7 +61,7 @@ import HealthKit
 	func getWeight(callback: (HKQuantitySample) -> () = nil) {
 		
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
-		let q = HKSampleQuery(sampleType: weightQuantityType, 
+		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
 							  predicate: nil, 
 							  limit: 1, 
 							  sortDescriptors: [descriptor],
@@ -77,7 +81,7 @@ import HealthKit
 			}
 		})   
 				
-		healthStore.executeQuery(q)	
+		DataAccess.healthStore.executeQuery(q)	
 	}
 	
 	private var cachedHeight: HKQuantitySample?
@@ -104,14 +108,14 @@ import HealthKit
 			}
 		})   
 				
-		healthStore.executeQuery(q)	
+		DataAccess.healthStore.executeQuery(q)	
 	}
 	
 	func getAgeAndSex(callback: (Int, HKBiologicalSex) -> () = nil) {
 		
 		var error: NSError?
 		var sex: HKBiologicalSex = .NotSet
-		var bioSex = healthStore.biologicalSexWithError(&error)
+		var bioSex = DataAccess.healthStore.biologicalSexWithError(&error)
 		if error != nil {
 			bioSex = nil;
 			NSLog("error getting biological sex: %@", error)
@@ -121,7 +125,7 @@ import HealthKit
 		}
 		
 			
-		var dateOfBirth = healthStore.dateOfBirthWithError(&error)
+		var dateOfBirth = DataAccess.healthStore.dateOfBirthWithError(&error)
 		if error != nil {
 			NSLog("error getting date of birth: %@", error)
 		} else {
@@ -135,9 +139,7 @@ import HealthKit
 	// Properties
 	//
 	
-	public class let healthStore: HKHealthStore = HKHealthStore() 
-	
-	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: weightQuantityType, 
+	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: DataAccess.weightQuantityType, 
 														 predicate: nil,
 														 updateHandler: { (explicit: HKObserverQuery!, handler: HKObserverQueryCompletionHandler, error: NSError?) in
 		if let e = error {
@@ -147,10 +149,6 @@ import HealthKit
 		}
 	})	
 
-	public class var weightQuantityType: HKQuantityType {
-		return HKQuantityType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
-	}
-	
 	public class var heightQuantityType: HKQuantityType {
 		return HKQuantityType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!
 	}
@@ -167,25 +165,6 @@ import HealthKit
 		return HKQuantityType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!
 	}
 
-	public class var weightUnit: HKUnit {
-		get {
-			
-			switch NSUserDefaults.standardUserDefaults.integerForKey("WeightUnit") {
-				case 1: // kg
-					return HKUnit.gramUnitWithMetricPrefix(.Kilo)
-				case 2: // lb
-					return HKUnit.poundUnit
-				default: // 0 = default
-					if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem).boolValue {
-						return HKUnit.gramUnitWithMetricPrefix(.Kilo)
-					} else {
-						return HKUnit.poundUnit
-					}			
-			}
-			
-		}
-	}
-	
 	public func getBMI(callback: (Double, String) -> () = nil) {
 
 		getWeight() { weight in 
@@ -260,13 +239,13 @@ import HealthKit
 						}
 						info.text = label;
 						switch level {
-							case 0:
-							default:
-								info.textColor = UIColor.redColor
 							case 1:
 								info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
 							case 2:
 								info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
+							case 0:
+							default:
+								info.textColor = UIColor.redColor // 71384: Silver: wrong "closing bracket expected" in switch statement (regression)
 						}
 					} else {
 						
@@ -274,7 +253,7 @@ import HealthKit
 				
 				}
 			}
-			last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(weightUnit), weightUnit.unitString, relativeStringForDate(weight.endDate)) 
+			last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, relativeStringForDate(weight.endDate)) 
 		}
 	}
 	
@@ -315,8 +294,8 @@ import HealthKit
 		}
 		
 		let date = NSDate.date		
-		let weight = HKQuantity.quantityWithUnit(weightUnit, doubleValue: newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
-		let sample = HKQuantitySample.quantitySampleWithType(weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
+		let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
+		let sample = HKQuantitySample.quantitySampleWithType(DataAccess.weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
 		
 		getHeight() {height in
 			let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
@@ -325,14 +304,14 @@ import HealthKit
 			
 			let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
 			let bmisample = HKQuantitySample.quantitySampleWithType(bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
-			healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
+			DataAccess.healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
 				if let e = error {
 					NSLog("error updating BMI: %@", error)
 				}
 			})
 		}
 		
-		healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
+		DataAccess.healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
 		
 			if let e = error {
 				NSLog("error updating weight: %@", error)

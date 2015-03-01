@@ -78,6 +78,7 @@
                             </textField>
                         </subviews>
                         <color key="backgroundColor" red="0.99991267920000004" green="1" blue="0.99988144639999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="Kf1-vN-vsy" secondAttribute="centerX" id="4jP-gr-dWg"/>
                             <constraint firstAttribute="centerX" secondItem="wZ2-3R-8i9" secondAttribute="centerX" id="4u9-nj-r2r"/>
@@ -126,6 +127,7 @@
                             <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kuC-nO-DuL" customClass="GraphView">
                                 <rect key="frame" x="0.0" y="64" width="600" height="462"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                             </view>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="yYc-r1-EjZ">
                                 <rect key="frame" x="132" y="552" width="336" height="29"/>

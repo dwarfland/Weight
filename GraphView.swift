@@ -9,10 +9,10 @@ import HealthKit
 		
 		if mornings != nil && evenings != nil {
 
-			var blueAttributes:  NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.blueColor]
-			var redAttributes:   NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.redColor]
-			var greenAttributes: NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.greenColor]
-			var grayAttributes:  NSMutableDictionary = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.grayColor]
+			var blueAttributes  = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.blueColor]
+			var redAttributes   = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.redColor]
+			var greenAttributes = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.greenColor]
+			var grayAttributes  = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.grayColor]
 
 			let minY = yOffsetForValue(realMin)
 			let minBezierPath = UIBezierPath()
@@ -21,7 +21,7 @@ import HealthKit
 			UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
 			minBezierPath.stroke()
 
-			let minText = NSString.stringWithFormat("%0.1f%@", realMin, MainViewController.weightUnit.unitString)
+			let minText = NSString.stringWithFormat("%0.1f%@", realMin, DataAccess.weightUnit.unitString)
 			UIColor.grayColor.`set`()
 			//let minSize = minText.sizeWithAttributes(grayAttributes)
 			minText.drawAtPoint(CGPointMake(startX, minY+1), withAttributes: grayAttributes)
@@ -34,7 +34,7 @@ import HealthKit
 				UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
 				maxBezierPath.stroke()
 	
-				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, MainViewController.weightUnit.unitString)
+				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, DataAccess.weightUnit.unitString)
 				let maxSize = maxText.sizeWithAttributes(grayAttributes)
 				maxText.drawAtPoint(CGPointMake(endX-maxSize.width, maxY-maxSize.height-1), withAttributes: grayAttributes)
 			}
@@ -119,11 +119,11 @@ import HealthKit
 		
 		if (newValue != NSNull.null && oldValue != NSNull.null) {
 		 
-			let m0 = (newValue.quantity.doubleValueForUnit(MainViewController.weightUnit)*10).intValue
-			let m1 = (oldValue.quantity.doubleValueForUnit(MainViewController.weightUnit)*10).intValue
-			NSLog("m0 %d, m1 %d", m0, m1)
+			let m0 = (newValue.quantity.doubleValueForUnit(DataAccess.weightUnit)*10).intValue
+			let m1 = (oldValue.quantity.doubleValueForUnit(DataAccess.weightUnit)*10).intValue
+			//NSLog("m0 %d, m1 %d", m0, m1)
 			if m0 < m1 {
-				return NSString.stringWithFormat("-%.1f", (m1-m0).doubleValue/10)
+				return NSString.stringWithFormat("\u2212%.1f", (m1-m0).doubleValue/10) // 71383: Silver: Cant use unicode literal with {}
 			} else if m0 > m1 {
 				return NSString.stringWithFormat("+%.1f", (m0-m1).doubleValue/10)
 			} else {
@@ -134,7 +134,7 @@ import HealthKit
 	}
 	
 	func pointForSample(_ s: HKQuantitySample, atIndex i: Int) -> CGPoint{ //TODO: drop _
-		var y = yOffsetForValue(s.quantity.doubleValueForUnit(MainViewController.weightUnit))
+		var y = yOffsetForValue(s.quantity.doubleValueForUnit(DataAccess.weightUnit))
 		var x = endX - i*offsetX
 		
 		return CGPointMake(x,y)	
@@ -251,14 +251,14 @@ import HealthKit
 			max = 0.0
 			for s in mornings {
 				if s is HKQuantitySample {
-					let q = s.quantity.doubleValueForUnit(MainViewController.weightUnit)
+					let q = s.quantity.doubleValueForUnit(DataAccess.weightUnit)
 					max = MAX(max, q)
 					min = MIN(min, q)
 				}
 			}
 			for s in evenings {
 				if s is HKQuantitySample {
-					let q = s.quantity.doubleValueForUnit(MainViewController.weightUnit)
+					let q = s.quantity.doubleValueForUnit(DataAccess.weightUnit)
 					max = MAX(max, q)
 					min = MIN(min, q)
 				}

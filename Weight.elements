@@ -29,9 +29,11 @@
         <CaptureConsoleOutput>False</CaptureConsoleOutput>
         <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
         <EnableAsserts>True</EnableAsserts>
+        <CreateIPA>True</CreateIPA>
+        <Architecture>arm64</Architecture>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <Optimize>true</Optimize>
+        <Optimize>False</Optimize>
         <OutputPath>.\bin\Release</OutputPath>
         <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
         <CaptureConsoleOutput>False</CaptureConsoleOutput>
@@ -79,6 +81,9 @@
         <Storyboard Include="Resources\Launch.storyboard"/>
         <AppResource Include="Resources\Settings.bundle"/>
         <Compile Include="NumbersViewController.swift"/>
+        <Compile Include="..\Steps\TwinPeaks\iOS\Oxygene\TPBaseCell.pas"/>
+        <Compile Include="..\Steps\TwinPeaks\iOS\Oxygene\TPBaseCellView.pas"/>
+        <Compile Include="DataAccess.swift"/>
     </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Oxygene\RemObjects.Oxygene.Nougat.targets"/>
+    <Import Project="$(MSBuildExtensionsPath)/RemObjects Software/Oxygene/RemObjects.Oxygene.Nougat.targets"/>
 </Project>

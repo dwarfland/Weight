@@ -1,68 +1,76 @@
-﻿import UIKit
+﻿import Foundation
 import HealthKit
 
-@IBObject public class GraphViewController : UIViewController {
+let MAX_DAYS = 1000
 
-	public override func viewDidLoad() {
-		title = "Chart"
-		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
-		segments.selectedSegmentIndex = 1 // todo. persist later, for now select Month
+typealias WeightDataCallback = (CollectedWeightData?) -> ()
 
-		if navigationItem.rightBarButtonItem == nil {
-			navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Numbers", style: .Plain, target: self, action: "showNumbers:")
+public class DataAccess {
+
+	public static let healthStore: HKHealthStore = HKHealthStore() 
+
+	public static var weightQuantityType: HKQuantityType {
+		return HKQuantityType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+	}
+	
+	public static var weightUnit: HKUnit {
+		get {
+			
+			switch NSUserDefaults.standardUserDefaults.integerForKey("WeightUnit") {
+				case 1: // kg
+					return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+				case 2: // lb
+					return HKUnit.poundUnit
+				default: // 0 = default
+					if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem).boolValue {
+						return HKUnit.gramUnitWithMetricPrefix(.Kilo)
+					} else {
+						return HKUnit.poundUnit
+					}			
+			}
+			
 		}
-
-		updateData()
 	}
 	
-	@IBAction func showNumbers(sendr: Any?) {
-		performSegueWithIdentifier("ShowNumbers", sender: nil)
-	}
+	static let sharedInstance = DataAccess()
 
-	@IBOutlet var segments: UISegmentedControl!
-	@IBOutlet var chartView: GraphView!
-	
-	@IBAction func segmentsChanged(sender: Any?) {
-		clearResults()
-		updateData()
-	}
-	
-	private func updateData() { 
+	func getData(# days: Int, callback: (CollectedWeightData?) -> () ) { 
 
+		//NSLog("1")
+		//NSLog("callback %@", callback)
+		callback.copy()
+		//NSLog("callback %@", callback)
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
-		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
+		let q = HKSampleQuery(sampleType: weightQuantityType, 
 							  predicate: nil, 
-							  limit: 1000, 
+							  limit: MAX_DAYS*3, 
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
+			/*NSLog("2")
 			if let e = error {
 				NSLog("error: %@", error)
+				NSLog("calling back with nil (a)")
+				callback(nil)
 			} else {
+				NSLog("3")
 				if results?.count > 0 {
-					processResults(results!)
-				} else {
-					clearResults()
+					//callback(results)*/
+					//NSLog("calling processResults")
+					processResults(results!, daysNeeded: days, callback: callback)
+				/*} else {
+					NSLog("calling back with nil (b)")
+					callback(nil)
 				}
-			}
+			}*/
 		})   
 				
-		DataAccess.healthStore.executeQuery(q)	
+		DataAccess.healthStore.executeQuery(q) 
 	}
 	
-	private func processResults(values: NSArray) {
+	func processResults(values: NSArray, daysNeeded: Int, callback: (CollectedWeightData?) -> ()) {
 		
-		var daysNeeded = 0
-		switch segments.selectedSegmentIndex {
-			case 0: daysNeeded = 7
-				break // Silver bug
-			case 1: daysNeeded = 31
-				break // Silver bug
-			case 2: daysNeeded = 93
-				break // Silver bug
-			case 3: daysNeeded = 360
-				break // Silver bug
-		}
+		//NSLog("processResults")
 		
 		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var evenings = NSMutableArray.arrayWithCapacity(daysNeeded)
@@ -95,7 +103,7 @@ import HealthKit
 				evenings.addObject(val)
 			}
 			lastValue = val
-			if lowestValue == nil || lowestValue!.quantity.doubleValueForUnit(DataAccess.weightUnit) > val.quantity.doubleValueForUnit(DataAccess.weightUnit) {
+			if lowestValue == nil || lowestValue!.quantity.doubleValueForUnit(weightUnit) > val.quantity.doubleValueForUnit(weightUnit) {
 				lowestValue = val;
 			}
 		}
@@ -142,37 +150,42 @@ import HealthKit
 			lowestValues.addObject(lowestVal)
 		}
 		
-		switch segments.selectedSegmentIndex {
-			case 0: daysNeeded = 7
-				break // Silver bug
-			case 1: daysNeeded = 31
-				break // Silver bug
-			case 2: daysNeeded = 93
+		var data = CollectedWeightData(morningValues: morningValues, eveningValues: eveningValues, lowestValues: lowestValues)
+		//NSLog("processResults done")
+		//NSLog("data in processResults: %@", data)
+		callback(data)
+		
+	}
+}
+
+public class CollectedWeightData {
+	
+
+	var morningValues: NSArray
+	var eveningValues: NSArray
+	var lowestValues: NSArray
+	
+	init(morningValues: NSArray, eveningValues: NSArray, lowestValues: NSArray) {
+		self.morningValues = morningValues;
+		self.eveningValues = eveningValues;
+		self.lowestValues = lowestValues;
+	}
+
+	func limitDataForSelection(selectedSegmentIndex: Int) {
+		switch selectedSegmentIndex {
+			case 2: 
 				morningValues = limitResults(morningValues, byFactor: 3)
 				eveningValues = limitResults(eveningValues, byFactor: 3)
 				lowestValues = limitResults(lowestValues, byFactor: 3)
-				break // Silver bug
-			case 3: daysNeeded = 365
+			case 3: 
 				morningValues = limitResults(morningValues, byFactor: 9)
 				eveningValues = limitResults(eveningValues, byFactor: 9)
 				lowestValues = limitResults(lowestValues, byFactor: 9)
-				break // Silver bug
+			default:
 		}
-		
-		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = morningValues
-			chartView.evenings = eveningValues
-			if segments.selectedSegmentIndex < 2 {
-				chartView.lowest = lowestValues
-			} else {
-				chartView.lowest = nil
-			}
-			chartView.dataChanged()
-		}
-		
 	}
-	
-	private func limitResults(_ values: NSArray, byFactor factor: Int) -> NSMutableArray { //TODO: drop _
+		
+	private static func limitResults(_ values: NSArray, byFactor factor: Int) -> NSMutableArray { //TODO: drop _
 		var result = NSMutableArray.arrayWithCapacity(values.count/factor)
 		var i = 0
 		while i < values.count {
@@ -196,14 +209,6 @@ import HealthKit
 			}
 		}
 		return result
-	}
-	
-	private func clearResults() {
-		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = nil
-			chartView.evenings = nil
-			chartView.dataChanged()
-		}
 	}
 
 }
