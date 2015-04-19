@@ -29,9 +29,9 @@ import HealthKit
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
-				getBMI() // temp for testing
+				self.getBMI() // temp for testing
 				//updateInfo()
-				DataAccess.healthStore.executeQuery(observerQuery)
+				DataAccess.healthStore.executeQuery(self.observerQuery)
 			}
 		})
 		title = "Weight"
@@ -48,8 +48,11 @@ import HealthKit
 		if diff < 5*60 {
 			return "just now"
 		}
-		if diff < 24*60*60 && comps.day == nowComps.day {
+		if NSCalendar.currentCalendar.isDateInToday(date) {
 			return "earlier today"
+		}
+		if NSCalendar.currentCalendar.isDateInYesterday(date) {
+			return "yesterday"
 		}
 		let df = NSDateFormatter()
 		df.doesRelativeDateFormatting = true
@@ -72,9 +75,9 @@ import HealthKit
 			} else {
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
-						cachedWeight = results![0];
+						self.cachedWeight = results![0];
 						if callback != nil { 
-							callback(cachedWeight!) 
+							callback(self.cachedWeight!) 
 						}
 					}
 				}
@@ -99,9 +102,9 @@ import HealthKit
 			} else {
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
-						cachedHeight = results![0];
+						self.cachedHeight = results![0];
 						if callback != nil { 
-							callback(cachedHeight!) 
+							callback(self.cachedHeight!) 
 						}
 					}
 				}
@@ -145,7 +148,7 @@ import HealthKit
 		if let e = error {
 			NSLog("error: %@", error)
 		} else {
-			getBMI()
+			self.getBMI()
 		}
 	})	
 
@@ -169,19 +172,19 @@ import HealthKit
 
 		getWeight() { weight in 
 
-			if navigationItem.rightBarButtonItem == nil {
-				navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
+			if self.navigationItem.rightBarButtonItem == nil {
+				self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
 			}
 
-			getHeight() { height in 
+			self.getHeight() { height in 
 
 				let weightInKg = weight.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-				let bmiValue = calculateBMIFromWeight(weightInKg, height: heightInM)
+				let bmiValue = self.calculateBMIFromWeight(weightInKg, height: heightInM)
 				//NSLog("weight: %f, height: %f, bmi: %f", weightInKg, heightInM, bmi)
-				bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
+				self.bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
 				
-				getAgeAndSex() { age, sex in
+				self.getAgeAndSex() { age, sex in
 				
 					var effectiveBmiValue = bmiValue
 				
@@ -237,15 +240,16 @@ import HealthKit
 						} else {
 							label = "Extremely Obese Class III"
 						}
-						info.text = label;
+						self.info.text = label;
 						switch level {
 							case 1:
-								info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
+								self.info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
 							case 2:
-								info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
+								self.info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
 							case 0:
+								fallthrough
 							default:
-								info.textColor = UIColor.redColor // 71384: Silver: wrong "closing bracket expected" in switch statement (regression)
+								self.info.textColor = UIColor.redColor // 71384: Silver: wrong "closing bracket expected" in switch statement (regression)
 						}
 					} else {
 						
@@ -253,7 +257,7 @@ import HealthKit
 				
 				}
 			}
-			last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, relativeStringForDate(weight.endDate)) 
+			self.last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, self.relativeStringForDate(weight.endDate)) 
 		}
 	}
 	
@@ -300,10 +304,10 @@ import HealthKit
 		getHeight() {height in
 			let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 			let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-			let bmi = calculateBMIFromWeight(weightInKg, height: heightInM)
+			let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
 			
 			let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
-			let bmisample = HKQuantitySample.quantitySampleWithType(bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
+			let bmisample = HKQuantitySample.quantitySampleWithType(self.bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
 			DataAccess.healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
 				if let e = error {
 					NSLog("error updating BMI: %@", error)
@@ -317,10 +321,10 @@ import HealthKit
 				NSLog("error updating weight: %@", error)
 			} else {
 				dispatch_async(dispatch_get_main_queue()) {
-					newValue.text = ""
+					self.newValue.text = ""
 					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
 				}
-				getBMI()
+				self.getBMI()
 			}
 			
 		})  

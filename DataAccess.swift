@@ -57,7 +57,7 @@ public class DataAccess {
 				if results?.count > 0 {
 					//callback(results)*/
 					//NSLog("calling processResults")
-					processResults(results!, daysNeeded: days, callback: callback)
+					self.processResults(results!, daysNeeded: days, callback: callback)
 				/*} else {
 					NSLog("calling back with nil (b)")
 					callback(nil)

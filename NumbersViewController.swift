@@ -18,8 +18,8 @@ public class NumbersViewController : UITableViewController {
 		DataAccess.sharedInstance.getData(days: 365, callback: { (newData: CollectedWeightData?) in 
 
 			dispatch_async(dispatch_get_main_queue()) { 
-				data = newData
-				tableView.reloadData() 
+				self.data = newData
+				self.tableView.reloadData() 
 			}
 		})
 	}
