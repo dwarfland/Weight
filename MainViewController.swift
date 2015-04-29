@@ -29,6 +29,8 @@ import HealthKit
 				NSLog("error: %@", error)
 			} else {
 				self.getBMI()
+				self.getBMI() // temp for testing
+				//updateInfo()
 				DataAccess.healthStore.executeQuery(self.observerQuery)
 			}
 		})
@@ -47,8 +49,11 @@ import HealthKit
 		if diff < 5*60 {
 			return "just now"
 		}
-		if diff < 24*60*60 && comps.day == nowComps.day {
+		if NSCalendar.currentCalendar.isDateInToday(date) {
 			return "earlier today"
+		}
+		if NSCalendar.currentCalendar.isDateInYesterday(date) {
+			return "yesterday"
 		}
 		let df = NSDateFormatter()
 		df.doesRelativeDateFormatting = true
