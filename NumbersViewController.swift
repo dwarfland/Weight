@@ -18,8 +18,8 @@ public class NumbersViewController : UITableViewController {
 		DataAccess.sharedInstance.getData(days: 365, callback: { (newData: CollectedWeightData?) in 
 
 			dispatch_async(dispatch_get_main_queue()) { 
-				data = newData
-				tableView.reloadData() 
+				self.data = newData
+				self.tableView.reloadData() 
 			}
 		})
 	}
@@ -135,7 +135,7 @@ public class WeightCellView : TPBaseCell {
 		var mainValue: HKQuantitySample = eveningValue != nil ? eveningValue! : morningValue!
 		
 		if mainValue != nil {
-			//NSLog("eveningValue?.quantity.doubleValueForUnit(DataAccess.weightUnit) %@", mainValue.quantity.doubleValueForUnit(DataAccess.weightUnit))
+			//self.("eveningValue?.quantity.doubleValueForUnit(DataAccess.weightUnit) %@", mainValue.quantity.doubleValueForUnit(DataAccess.weightUnit))
 			let eveningString = NSString.stringWithFormat("%.1f", mainValue.quantity.doubleValueForUnit(DataAccess.weightUnit).doubleValue)
 			let eveningSize = eveningString.sizeWithAttributes(eveningAttributes)
 			let eveningFrame = CGRectMake(frame.size.width-5.0-eveningSize.width, 6.0, eveningSize.width, eveningSize.height)

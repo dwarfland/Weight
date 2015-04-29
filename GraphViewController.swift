@@ -40,9 +40,9 @@ import HealthKit
 				NSLog("error: %@", error)
 			} else {
 				if results?.count > 0 {
-					processResults(results!)
+					self.processResults(results!)
 				} else {
-					clearResults()
+					self.clearResults()
 				}
 			}
 		})   
@@ -55,13 +55,9 @@ import HealthKit
 		var daysNeeded = 0
 		switch segments.selectedSegmentIndex {
 			case 0: daysNeeded = 7
-				break // Silver bug
 			case 1: daysNeeded = 31
-				break // Silver bug
 			case 2: daysNeeded = 93
-				break // Silver bug
 			case 3: daysNeeded = 360
-				break // Silver bug
 		}
 		
 		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
@@ -143,31 +139,30 @@ import HealthKit
 		}
 		
 		switch segments.selectedSegmentIndex {
-			case 0: daysNeeded = 7
-				break // Silver bug
-			case 1: daysNeeded = 31
-				break // Silver bug
-			case 2: daysNeeded = 93
+			case 0: 
+				daysNeeded = 7
+			case 1: 
+				daysNeeded = 31
+			case 2: 
+				daysNeeded = 93
 				morningValues = limitResults(morningValues, byFactor: 3)
 				eveningValues = limitResults(eveningValues, byFactor: 3)
 				lowestValues = limitResults(lowestValues, byFactor: 3)
-				break // Silver bug
 			case 3: daysNeeded = 365
 				morningValues = limitResults(morningValues, byFactor: 9)
 				eveningValues = limitResults(eveningValues, byFactor: 9)
 				lowestValues = limitResults(lowestValues, byFactor: 9)
-				break // Silver bug
 		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = morningValues
-			chartView.evenings = eveningValues
-			if segments.selectedSegmentIndex < 2 {
-				chartView.lowest = lowestValues
+			self.chartView.mornings = morningValues
+			self.chartView.evenings = eveningValues
+			if self.segments.selectedSegmentIndex < 2 {
+				self.chartView.lowest = lowestValues
 			} else {
-				chartView.lowest = nil
+				self.chartView.lowest = nil
 			}
-			chartView.dataChanged()
+			self.chartView.dataChanged()
 		}
 		
 	}
@@ -200,9 +195,9 @@ import HealthKit
 	
 	private func clearResults() {
 		dispatch_async(dispatch_get_main_queue()) {
-			chartView.mornings = nil
-			chartView.evenings = nil
-			chartView.dataChanged()
+			self.chartView.mornings = nil
+			self.chartView.evenings = nil
+			self.chartView.dataChanged()
 		}
 	}
 

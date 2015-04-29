@@ -9,9 +9,8 @@ import HealthKit
 		
 		navigationController.navigationBar.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
 		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
-		let attributes = NSMutableDictionary()
-		attributes[NSForegroundColorAttributeName] = UIColor.colorWithRed(1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-		navigationController.navigationBar.titleTextAttributes = attributes
+		
+		navigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.colorWithRed(1.0, green: 1.0, blue: 1.0, alpha: 1.0)]
 
 		#if TARGET_IPHONE_SIMULATOR
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
@@ -29,9 +28,8 @@ import HealthKit
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
-				getBMI() // temp for testing
-				//updateInfo()
-				DataAccess.healthStore.executeQuery(observerQuery)
+				self.getBMI()
+				DataAccess.healthStore.executeQuery(self.observerQuery)
 			}
 		})
 		title = "Weight"
@@ -41,6 +39,7 @@ import HealthKit
 	
 	func relativeStringForDate(date: NSDate) -> String {
 		
+		NSLog("relativeStringForDate start")
 		let comps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: date)
 		let nowComps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: NSDate.date)
 		let diff = -date.timeIntervalSinceNow
@@ -54,12 +53,16 @@ import HealthKit
 		let df = NSDateFormatter()
 		df.doesRelativeDateFormatting = true
 		df.dateStyle = NSDateFormatterStyle.NSDateFormatterMediumStyle
+		NSLog("relativeStringForDate almost end")
+		NSLog("df.stringFromDate(date).lowercaseString %@", df.stringFromDate(date).lowercaseString)
 		return df.stringFromDate(date).lowercaseString
+		NSLog("relativeStringForDate end")
 	}
 	
 	private var cachedWeight: HKQuantitySample?
 	func getWeight(callback: (HKQuantitySample) -> () = nil) {
 		
+		NSLog("getWeight start")
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
 							  predicate: nil, 
@@ -72,9 +75,9 @@ import HealthKit
 			} else {
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
-						cachedWeight = results![0];
+						self.cachedWeight = results![0];
 						if callback != nil { 
-							callback(cachedWeight!) 
+							callback(self.cachedWeight!) 
 						}
 					}
 				}
@@ -82,11 +85,13 @@ import HealthKit
 		})   
 				
 		DataAccess.healthStore.executeQuery(q)	
+		NSLog("getWeight end")
 	}
 	
 	private var cachedHeight: HKQuantitySample?
 	func getHeight(callback: (HKQuantitySample) -> () = nil) {
 		
+		NSLog("getHeight start")
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: heightQuantityType, 
 							  predicate: nil, 
@@ -99,9 +104,9 @@ import HealthKit
 			} else {
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
-						cachedHeight = results![0];
+						self.cachedHeight = results![0];
 						if callback != nil { 
-							callback(cachedHeight!) 
+							callback(self.cachedHeight!) 
 						}
 					}
 				}
@@ -109,10 +114,12 @@ import HealthKit
 		})   
 				
 		DataAccess.healthStore.executeQuery(q)	
+		NSLog("getHeight end")
 	}
 	
 	func getAgeAndSex(callback: (Int, HKBiologicalSex) -> () = nil) {
 		
+		NSLog("getAgeAndSex start")
 		var error: NSError?
 		var sex: HKBiologicalSex = .NotSet
 		var bioSex = DataAccess.healthStore.biologicalSexWithError(&error)
@@ -123,7 +130,6 @@ import HealthKit
 		else {
 			sex = bioSex.biologicalSex
 		}
-		
 			
 		var dateOfBirth = DataAccess.healthStore.dateOfBirthWithError(&error)
 		if error != nil {
@@ -133,6 +139,7 @@ import HealthKit
 			var components = NSCalendar.currentCalendar.components(.NSYearCalendarUnit, fromDate: dateOfBirth, toDate: NSDate.date, options: 0)
 			callback(components.year, sex)
 		}
+		NSLog("getAgeAndSex end")
 	}
 
 	//
@@ -145,7 +152,7 @@ import HealthKit
 		if let e = error {
 			NSLog("error: %@", error)
 		} else {
-			getBMI()
+			self.getBMI()
 		}
 	})	
 
@@ -167,22 +174,31 @@ import HealthKit
 
 	public func getBMI(callback: (Double, String) -> () = nil) {
 
+		NSLog("getBMI start")
 		getWeight() { weight in 
 
-			if navigationItem.rightBarButtonItem == nil {
-				navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
+			NSLog("getWeight callback start")
+			if self.navigationItem.rightBarButtonItem == nil {
+				self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
 			}
 
-			getHeight() { height in 
+			NSLog("getWeight callback before setlabel")
+			self.last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, self.relativeStringForDate(weight.endDate)) 
+			NSLog("getWeight callback after setlabel")
 
+			self.getHeight() { height in 
+
+				NSLog("getHeight callback start")
 				let weightInKg = weight.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-				let bmiValue = calculateBMIFromWeight(weightInKg, height: heightInM)
-				//NSLog("weight: %f, height: %f, bmi: %f", weightInKg, heightInM, bmi)
-				bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
+				let bmiValue = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+				NSLog("getHeight callback before setlabel")
+				self.bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
+				NSLog("getHeight callback after setlabel")
 				
-				getAgeAndSex() { age, sex in
+				self.getAgeAndSex() { age, sex in
 				
+					NSLog("getAgeAndSex callback start")
 					var effectiveBmiValue = bmiValue
 				
 					if age > 18 || age == -1{
@@ -237,23 +253,26 @@ import HealthKit
 						} else {
 							label = "Extremely Obese Class III"
 						}
-						info.text = label;
+						self.info.text = label;
 						switch level {
 							case 1:
-								info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
+								self.info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
 							case 2:
-								info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
+								self.info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
 							case 0:
+								fallthrough
 							default:
-								info.textColor = UIColor.redColor // 71384: Silver: wrong "closing bracket expected" in switch statement (regression)
+								self.info.textColor = UIColor.redColor
 						}
 					} else {
-						
+						//ToDo: handle BMI for kids?
 					}
+					NSLog("getAgeAndSex callback end")
 				
 				}
+				NSLog("getHeight callback end")
 			}
-			last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, relativeStringForDate(weight.endDate)) 
+			NSLog("getWeight callback end")
 		}
 	}
 	
@@ -300,10 +319,10 @@ import HealthKit
 		getHeight() {height in
 			let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 			let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-			let bmi = calculateBMIFromWeight(weightInKg, height: heightInM)
+			let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
 			
 			let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
-			let bmisample = HKQuantitySample.quantitySampleWithType(bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
+			let bmisample = HKQuantitySample.quantitySampleWithType(self.bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
 			DataAccess.healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
 				if let e = error {
 					NSLog("error updating BMI: %@", error)
@@ -317,10 +336,10 @@ import HealthKit
 				NSLog("error updating weight: %@", error)
 			} else {
 				dispatch_async(dispatch_get_main_queue()) {
-					newValue.text = ""
+					self.newValue.text = ""
 					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
 				}
-				getBMI()
+				self.getBMI()
 			}
 			
 		})  
