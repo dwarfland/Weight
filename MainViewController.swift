@@ -10,8 +10,6 @@ import HealthKit
 		navigationController.navigationBar.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
 		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		
-		navigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.colorWithRed(1.0, green: 1.0, blue: 1.0, alpha: 1.0)]
-
 		#if TARGET_IPHONE_SIMULATOR
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
 		#endif
@@ -20,6 +18,7 @@ import HealthKit
 		bmi.text = "  "
 		info.text = "  "
 		newValue.becomeFirstResponder()
+		weightEditChanged(nil)
 		
 		let readTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, heightQuantityType, dateOfBirthCharacteristicType, biologicalSexCharacteristicType, nil)
 		let writeTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, bmiQuantityType, nil)
@@ -29,7 +28,6 @@ import HealthKit
 				NSLog("error: %@", error)
 			} else {
 				self.getBMI()
-				self.getBMI() // temp for testing
 				//updateInfo()
 				DataAccess.healthStore.executeQuery(self.observerQuery)
 			}
@@ -41,11 +39,7 @@ import HealthKit
 	
 	func relativeStringForDate(date: NSDate) -> String {
 		
-		NSLog("relativeStringForDate start")
-		let comps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: date)
-		let nowComps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit|NSCalendarUnit.MonthCalendarUnit|NSCalendarUnit.YearCalendarUnit, fromDate: NSDate.date)
 		let diff = -date.timeIntervalSinceNow
-		//NSLog("date diff: %f", diff)
 		if diff < 5*60 {
 			return "just now"
 		}
@@ -58,16 +52,12 @@ import HealthKit
 		let df = NSDateFormatter()
 		df.doesRelativeDateFormatting = true
 		df.dateStyle = NSDateFormatterStyle.NSDateFormatterMediumStyle
-		NSLog("relativeStringForDate almost end")
-		NSLog("df.stringFromDate(date).lowercaseString %@", df.stringFromDate(date).lowercaseString)
 		return df.stringFromDate(date).lowercaseString
-		NSLog("relativeStringForDate end")
 	}
 	
 	private var cachedWeight: HKQuantitySample?
 	func getWeight(callback: (HKQuantitySample) -> () = nil) {
 		
-		NSLog("getWeight start")
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
 							  predicate: nil, 
@@ -81,6 +71,7 @@ import HealthKit
 				if results?.count > 0 {
 					dispatch_async(dispatch_get_main_queue()) {
 						self.cachedWeight = results![0];
+						self.weightEditChanged(nil)
 						if callback != nil { 
 							callback(self.cachedWeight!) 
 						}
@@ -90,13 +81,11 @@ import HealthKit
 		})   
 				
 		DataAccess.healthStore.executeQuery(q)	
-		NSLog("getWeight end")
 	}
 	
 	private var cachedHeight: HKQuantitySample?
 	func getHeight(callback: (HKQuantitySample) -> () = nil) {
 		
-		NSLog("getHeight start")
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: heightQuantityType, 
 							  predicate: nil, 
@@ -119,12 +108,10 @@ import HealthKit
 		})   
 				
 		DataAccess.healthStore.executeQuery(q)	
-		NSLog("getHeight end")
 	}
 	
 	func getAgeAndSex(callback: (Int, HKBiologicalSex) -> () = nil) {
 		
-		NSLog("getAgeAndSex start")
 		var error: NSError?
 		var sex: HKBiologicalSex = .NotSet
 		var bioSex = DataAccess.healthStore.biologicalSexWithError(&error)
@@ -144,7 +131,6 @@ import HealthKit
 			var components = NSCalendar.currentCalendar.components(.NSYearCalendarUnit, fromDate: dateOfBirth, toDate: NSDate.date, options: 0)
 			callback(components.year, sex)
 		}
-		NSLog("getAgeAndSex end")
 	}
 
 	//
@@ -179,105 +165,99 @@ import HealthKit
 
 	public func getBMI(callback: (Double, String) -> () = nil) {
 
-		NSLog("getBMI start")
 		getWeight() { weight in 
 
-			NSLog("getWeight callback start")
 			if self.navigationItem.rightBarButtonItem == nil {
 				self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
 			}
 
-			NSLog("getWeight callback before setlabel")
 			self.last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, self.relativeStringForDate(weight.endDate)) 
-			NSLog("getWeight callback after setlabel")
+			self.bmi.text = "  "
+			self.info.text = "  "
 
 			self.getHeight() { height in 
 
-				NSLog("getHeight callback start")
 				let weightInKg = weight.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
-				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-				let bmiValue = self.calculateBMIFromWeight(weightInKg, height: heightInM)
-				NSLog("getHeight callback before setlabel")
-				self.bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
-				NSLog("getHeight callback after setlabel")
+				if weightInKg > 10 {
 				
-				self.getAgeAndSex() { age, sex in
-				
-					NSLog("getAgeAndSex callback start")
-					var effectiveBmiValue = bmiValue
-				
-					if age > 18 || age == -1{
-
-						//
-						// adjust for females, based on http://www.bmi-rechner.net
-						//
-						if sex == HKBiologicalSex.Female {
-							if effectiveBmiValue < 28 { // anything below 30 is one less for females
-								effectiveBmiValue++;
+					let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
+					let bmiValue = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+					self.bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
+					self.info.text = "  "
+					
+					self.getAgeAndSex() { age, sex in
+					
+						var effectiveBmiValue = bmiValue
+						
+						if age > 18 || age == -1 {
+		
+							//
+							// adjust for females, based on http://www.bmi-rechner.net
+							//
+							if sex == HKBiologicalSex.Female {
+								if effectiveBmiValue < 28 { // anything below 30 is one less for females
+									effectiveBmiValue++;
+								}
 							}
-						}
-						 
-						//
-						// adjust for age, based on http://www.bmi-rechner.net
-						//
-						if age <= 24 {
-							effectiveBmiValue++;
-						} else if age <= 34 {
-							// keep
-						} else if age <= 44 {
-							effectiveBmiValue -= 1;
-						} else if age <= 54 {
-							effectiveBmiValue -= 2;
-						} else if age <= 64 {
-							effectiveBmiValue -= 3;
+								 
+							//
+							// adjust for age, based on http://www.bmi-rechner.net
+							//
+							if age <= 24 {
+								effectiveBmiValue++;
+							} else if age <= 34 {
+								// keep
+							} else if age <= 44 {
+								effectiveBmiValue -= 1;
+							} else if age <= 54 {
+								effectiveBmiValue -= 2;
+							} else if age <= 64 {
+								effectiveBmiValue -= 3;
+							} else {
+								effectiveBmiValue -= 4;
+							}
+								
+							//NSLog("effectiveBmiValue: %f", effectiveBmiValue)
+								
+							var label = "";   
+							var level = 0;
+							if effectiveBmiValue < 16 {
+								label = "Severely Underweight"
+							} else if effectiveBmiValue <= 17 {
+								label = "Moderately Underweight"
+							} else if effectiveBmiValue <= 18.5 {
+								label = "Slightly Underweight"
+								level = 1
+							} else if effectiveBmiValue <= 25 {
+								label = "Normal"
+								level = 2
+							} else if effectiveBmiValue <= 30 {
+								label = "Overweight"
+								level = 1
+							} else if effectiveBmiValue <= 35 {
+								label = "Obese Class I"
+							} else if effectiveBmiValue <= 40 {
+								label = "Obese Class II"
+							} else {
+								label = "Extremely Obese Class III"
+							}
+							self.info.text = label;
+							switch level {
+								case 1:
+									self.info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
+								case 2:
+									self.info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
+								case 0:
+									fallthrough
+								default:
+									self.info.textColor = UIColor.redColor
+							}
 						} else {
-							effectiveBmiValue -= 4;
+							//ToDo: handle BMI for kids?
 						}
-						
-						NSLog("effectiveBmiValue: %f", effectiveBmiValue)
-						
-						var label = "";   
-						var level = 0;
-						if effectiveBmiValue < 16 {
-							label = "Severely Underweight"
-						} else if effectiveBmiValue <= 17 {
-							label = "Moderately Underweight"
-						} else if effectiveBmiValue <= 18.5 {
-							label = "Slightly Underweight"
-							level = 1
-						} else if effectiveBmiValue <= 25 {
-							label = "Normal"
-							level = 2
-						} else if effectiveBmiValue <= 30 {
-							label = "Overweight"
-							level = 1
-						} else if effectiveBmiValue <= 35 {
-							label = "Obese Class I"
-						} else if effectiveBmiValue <= 40 {
-							label = "Obese Class II"
-						} else {
-							label = "Extremely Obese Class III"
-						}
-						self.info.text = label;
-						switch level {
-							case 1:
-								self.info.textColor = UIColor.colorWithRed(0.75, green: 0.75, blue: 0, alpha: 1.0)
-							case 2:
-								self.info.textColor = UIColor.colorWithRed(0, green: 0.5, blue: 0, alpha: 1.0)
-							case 0:
-								fallthrough
-							default:
-								self.info.textColor = UIColor.redColor
-						}
-					} else {
-						//ToDo: handle BMI for kids?
 					}
-					NSLog("getAgeAndSex callback end")
-				
 				}
-				NSLog("getHeight callback end")
 			}
-			NSLog("getWeight callback end")
 		}
 	}
 	
@@ -306,22 +286,57 @@ import HealthKit
 	@IBOutlet weak var bmi: UILabel! 
 	@IBOutlet weak var info: UILabel! 
 	@IBOutlet weak var newValue: UITextField!
+	@IBOutlet weak var addButton: UIButton!
 	
 	//
 	// Actions
 	//
 	
+	@IBAction func weightEditChanged(sender: Any?) {
+
+		if newValue.text.doubleValue < 10 {
+			NSLog("disable")
+			addButton.hidden = false
+			addButton.alpha = 0.25
+			return
+		}
+		
+		let enteredWeight = newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue
+		if let oldWeightSample = cachedWeight {
+			let oldWeight = oldWeightSample.quantity.doubleValueForUnit(DataAccess.weightUnit)
+			if oldWeight > 10 && enteredWeight > 99 {
+				let potentialNewWeight = enteredWeight/10
+				if oldWeight-potentialNewWeight > -10 && oldWeight-potentialNewWeight < 10 {
+					newValue.text = NSString.stringWithFormat("%0.1f", potentialNewWeight)
+				}
+			}
+		}
+		
+		NSLog("enable")
+		addButton.enabled = true
+		addButton.alpha = 10.0
+	}
+	
 	@IBAction func add(sender: Any?) {
+		
+		weightEditChanged(sender)
 		
 		if newValue.text.doubleValue < 10 {
 			return
 		}
 		
+		last.text = "updating..."
+		bmi.text = "  "
+		info.text = "  "
+		
 		let date = NSDate.date		
 		let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
 		let sample = HKQuantitySample.quantitySampleWithType(DataAccess.weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
+
+		self.newValue.text = ""
+		weightEditChanged(sender)
 		
-		getHeight() {height in
+		getHeight() { height in
 			let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 			let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
 			let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
@@ -340,10 +355,9 @@ import HealthKit
 			if let e = error {
 				NSLog("error updating weight: %@", error)
 			} else {
-				dispatch_async(dispatch_get_main_queue()) {
-					self.newValue.text = ""
+				//dispatch_async(dispatch_get_main_queue()) {
 					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
-				}
+				//}
 				self.getBMI()
 			}
 			
