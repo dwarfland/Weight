@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="upw-XD-ta5">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="upw-XD-ta5">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -13,6 +13,9 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="8jC-BL-IBN">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" red="0.99991267919540405" green="1" blue="0.99988144636154175" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </textAttributes>
                     </navigationBar>
                     <connections>
                         <segue destination="6sL-vA-09b" kind="relationship" relationship="rootViewController" id="bFW-2F-f2c"/>
@@ -75,6 +78,10 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="128"/>
                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad" enablesReturnKeyAutomatically="YES"/>
+                                <connections>
+                                    <action selector="weightEditChanged:" destination="6sL-vA-09b" eventType="editingChanged" id="iIl-O3-dQe"/>
+                                    <outlet property="delegate" destination="6sL-vA-09b" id="nZV-m2-IeX"/>
+                                </connections>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" red="0.99991267920000004" green="1" blue="0.99988144639999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -101,6 +108,7 @@
                     <navigationItem key="navigationItem" id="jHu-K8-Lny"/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
+                        <outlet property="addButton" destination="XiH-Wh-nim" id="qgq-Jk-a8X"/>
                         <outlet property="bmi" destination="bmd-ko-Bnb" id="P90-FE-AGb"/>
                         <outlet property="info" destination="Kf1-vN-vsy" id="hfk-Je-dDm"/>
                         <outlet property="last" destination="In2-3e-0lt" id="faE-iC-q34"/>
