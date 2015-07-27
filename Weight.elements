@@ -14,12 +14,12 @@
         <CreateAppBundle>True</CreateAppBundle>
         <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
         <CodesignCertificateName>iPhone Developer: marc hoffman (K2YTD84U6W)</CodesignCertificateName>
-        <ProvisioningProfile>b741ea44-0b8b-4707-907a-abc690ff1a2c</ProvisioningProfile>
-        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
         <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
         <EnableAsserts>False</EnableAsserts>
         <GenerateDebugInfo>True</GenerateDebugInfo>
         <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
+        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
+        <ProvisioningProfile>4f1592e8-8f2c-4e5a-8568-4a6382a32c80</ProvisioningProfile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -39,10 +39,10 @@
         <CaptureConsoleOutput>False</CaptureConsoleOutput>
         <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
         <CreateIPA>True</CreateIPA>
+        <GenerateDSym>True</GenerateDSym>
         <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
         <ProvisioningProfileName>Weight App Store</ProvisioningProfileName>
-        <ProvisioningProfile>74dbdb49-c2dc-49ee-9b50-3b21f3923f60</ProvisioningProfile>
-        <GenerateDSym>True</GenerateDSym>
+        <ProvisioningProfile>495431d9-6720-4645-8473-033d96bc43ad</ProvisioningProfile>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="CoreGraphics.fx"/>

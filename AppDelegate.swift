@@ -6,7 +6,7 @@
 
 	func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -> Bool {
 
-		application.statusBarStyle = .LightContent
+		application.statusBarStyle = UIStatusBarStyle.LightContent
 		return true
 	}
 

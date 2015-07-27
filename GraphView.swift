@@ -7,12 +7,12 @@ import HealthKit
 		
 		let font = UIFont.systemFontOfSize(10)
 		
+		var grayAttributes  = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.grayColor]
 		if mornings != nil && evenings != nil {
 
 			var blueAttributes  = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.blueColor]
 			var redAttributes   = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.redColor]
 			var greenAttributes = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.greenColor]
-			var grayAttributes  = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.grayColor]
 
 			let minY = yOffsetForValue(realMin)
 			let minBezierPath = UIBezierPath()
@@ -106,6 +106,11 @@ import HealthKit
 				size = s.sizeWithAttributes(greenAttributes)
 				s.drawAtPoint(CGPointMake(left, startY), withAttributes: greenAttributes)
 			}
+		} else {
+			let text = "waiting for data from HealthKit"
+			let size1 = text.sizeWithAttributes(grayAttributes);
+			let point = CGPointMake( (frame.size.width-size1.width)/2, (frame.size.height-size1.height)/2 )
+			text.drawAtPoint(point, withAttributes: grayAttributes);
 		}
 		/*let size1 = "first ".sizeWithFont(UIFont.systemFontOfSize(10));
 		"first ".drawAtPoint(CGPointMake(startX, startY), withFont:font);

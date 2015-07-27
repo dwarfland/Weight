@@ -11,10 +11,17 @@ import HealthKit
 		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		
 		#if TARGET_IPHONE_SIMULATOR
-		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
+		addChartButton()
 		#endif
+
+		let cachedWeight = NSUserDefaults.standardUserDefaults.floatForKey(CACHED_LAST_WEIGHT_VALUE_KEY)
+		if cachedWeight > 0 {
+			last.text = NSString.stringWithFormat("%0.1f%@, cached.", cachedWeight, DataAccess.weightUnit.unitString)
+			addChartButton()
+		} else {
+			last.text = DataAccess.weightUnit.unitString
+		}
 		
-		last.text = DataAccess.weightUnit.unitString
 		bmi.text = "  "
 		info.text = "  "
 		newValue.becomeFirstResponder()
@@ -29,13 +36,15 @@ import HealthKit
 			} else {
 				self.getBMI()
 				//updateInfo()
-				DataAccess.healthStore.executeQuery(self.observerQuery)
+				//DataAccess.healthStore.executeQuery(self.observerQuery)
 			}
 		})
 		title = "Weight"
 		
 		//view.addGestureRecognizer(UISwipeGestureRecognizer());
 	}
+	
+	let CACHED_LAST_WEIGHT_VALUE_KEY = "CACHED_LAST_WEIGHT_VALUE"
 	
 	func relativeStringForDate(date: NSDate) -> String {
 		
@@ -55,8 +64,12 @@ import HealthKit
 		return df.stringFromDate(date).lowercaseString
 	}
 	
+	private var getWeightVersion: Int = 0
 	private var cachedWeight: HKQuantitySample?
 	func getWeight(callback: (HKQuantitySample) -> () = nil) {
+		
+		let currentGetWeightVersion = ++getWeightVersion;
+		let date = NSDate.date;
 		
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
@@ -65,6 +78,13 @@ import HealthKit
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
+			NSLog("-- getWeight took %f", -date.timeIntervalSinceNow);
+
+			if currentGetWeightVersion != self.getWeightVersion {
+				NSLog("skipping weight update because newer one is pending.")
+				return
+			}
+
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
@@ -83,9 +103,12 @@ import HealthKit
 		DataAccess.healthStore.executeQuery(q)	
 	}
 	
+	private var getHeightVersion: Int = 0
 	private var cachedHeight: HKQuantitySample?
 	func getHeight(callback: (HKQuantitySample) -> () = nil) {
 		
+		let currentGetHeightVersion = ++self.getHeightVersion;
+
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: heightQuantityType, 
 							  predicate: nil, 
@@ -93,6 +116,11 @@ import HealthKit
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
+			if currentGetHeightVersion != self.getHeightVersion {
+				NSLog("skipping height update because newer one is pending.")
+				return
+			}
+
 			if let e = error {
 				NSLog("error: %@", error)
 			} else {
@@ -118,16 +146,18 @@ import HealthKit
 		if error != nil {
 			bioSex = nil;
 			NSLog("error getting biological sex: %@", error)
-		}
-		else {
+		} else if bioSex == nil {
+			NSLog("biological sex not set.")
+		} else {
 			sex = bioSex.biologicalSex
 		}
 			
 		var dateOfBirth = DataAccess.healthStore.dateOfBirthWithError(&error)
 		if error != nil {
 			NSLog("error getting date of birth: %@", error)
+		} else if dateOfBirth == nil {
+			NSLog("date of birth not set.")
 		} else {
-
 			var components = NSCalendar.currentCalendar.components(.NSYearCalendarUnit, fromDate: dateOfBirth, toDate: NSDate.date, options: 0)
 			callback(components.year, sex)
 		}
@@ -137,7 +167,7 @@ import HealthKit
 	// Properties
 	//
 	
-	private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: DataAccess.weightQuantityType, 
+	/*private let observerQuery: HKObserverQuery = HKObserverQuery(sampleType: DataAccess.weightQuantityType, 
 														 predicate: nil,
 														 updateHandler: { (explicit: HKObserverQuery!, handler: HKObserverQueryCompletionHandler, error: NSError?) in
 		if let e = error {
@@ -145,7 +175,7 @@ import HealthKit
 		} else {
 			self.getBMI()
 		}
-	})	
+	}) */   
 
 	public class var heightQuantityType: HKQuantityType {
 		return HKQuantityType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight)!
@@ -163,15 +193,21 @@ import HealthKit
 		return HKQuantityType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex)!
 	}
 
+	func addChartButton() {
+		if self.navigationItem.rightBarButtonItem == nil {
+			self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
+		}
+	}
+
 	public func getBMI(callback: (Double, String) -> () = nil) {
 
 		getWeight() { weight in 
-
-			if self.navigationItem.rightBarButtonItem == nil {
-				self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
-			}
+		
+			self.addChartButton()
 
 			self.last.text = NSString.stringWithFormat("%0.1f%@, %@.", weight.quantity.doubleValueForUnit(DataAccess.weightUnit), DataAccess.weightUnit.unitString, self.relativeStringForDate(weight.endDate)) 
+			NSUserDefaults.standardUserDefaults.setFloat(weight.quantity.doubleValueForUnit(DataAccess.weightUnit), forKey: self.CACHED_LAST_WEIGHT_VALUE_KEY)
+			
 			self.bmi.text = "  "
 			self.info.text = "  "
 
@@ -295,24 +331,25 @@ import HealthKit
 	@IBAction func weightEditChanged(sender: Any?) {
 
 		if newValue.text.doubleValue < 10 {
-			NSLog("disable")
 			addButton.hidden = false
 			addButton.alpha = 0.25
 			return
 		}
 		
 		let enteredWeight = newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue
+		
+		var oldWeight = NSUserDefaults.standardUserDefaults.floatForKey(CACHED_LAST_WEIGHT_VALUE_KEY)
 		if let oldWeightSample = cachedWeight {
-			let oldWeight = oldWeightSample.quantity.doubleValueForUnit(DataAccess.weightUnit)
-			if oldWeight > 10 && enteredWeight > 99 {
-				let potentialNewWeight = enteredWeight/10
-				if oldWeight-potentialNewWeight > -10 && oldWeight-potentialNewWeight < 10 {
-					newValue.text = NSString.stringWithFormat("%0.1f", potentialNewWeight)
-				}
+			oldWeight = oldWeightSample.quantity.doubleValueForUnit(DataAccess.weightUnit)
+		}
+
+		if oldWeight > 10 && enteredWeight > 99 {
+			let potentialNewWeight = enteredWeight/10
+			if oldWeight-potentialNewWeight > -10 && oldWeight-potentialNewWeight < 10 {
+				newValue.text = NSString.stringWithFormat("%0.1f", potentialNewWeight)
 			}
 		}
 		
-		NSLog("enable")
 		addButton.enabled = true
 		addButton.alpha = 10.0
 	}
