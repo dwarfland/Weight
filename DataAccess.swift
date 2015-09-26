@@ -22,7 +22,7 @@ public class DataAccess {
 				case 2: // lb
 					return HKUnit.poundUnit
 				default: // 0 = default
-					if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem).boolValue {
+					if NSLocale.currentLocale.objectForKey(NSLocaleUsesMetricSystem)!.boolValue {
 						return HKUnit.gramUnitWithMetricPrefix(.Kilo)
 					} else {
 						return HKUnit.poundUnit

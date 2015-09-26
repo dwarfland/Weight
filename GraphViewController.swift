@@ -38,7 +38,7 @@ import HealthKit
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
-			NSLog("-- updateData took %f, %ld records", -date.timeIntervalSinceNow, results != nil ? results.count : -1);
+			NSLog("-- updateData took %f, %ld records", -date.timeIntervalSinceNow, results != nil ? results!.count : -1);
 
 			if let e = error {
 				NSLog("error: %@", error)

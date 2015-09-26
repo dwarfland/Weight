@@ -7,8 +7,8 @@ import HealthKit
 
 		super.viewDidLoad()
 		
-		navigationController.navigationBar.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
-		navigationController.navigationBar.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
+		navigationController?.navigationBar?.tintColor = UIColor.colorWithRed(1.0, green: 0.75, blue: 0.75, alpha: 1.0)
+		navigationController?.navigationBar?.barTintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 		
 		#if TARGET_IPHONE_SIMULATOR
 		addChartButton()
@@ -149,7 +149,7 @@ import HealthKit
 		} else if bioSex == nil {
 			NSLog("biological sex not set.")
 		} else {
-			sex = bioSex.biologicalSex
+			sex = bioSex!.biologicalSex
 		}
 			
 		var dateOfBirth = DataAccess.healthStore.dateOfBirthWithError(&error)
@@ -158,7 +158,7 @@ import HealthKit
 		} else if dateOfBirth == nil {
 			NSLog("date of birth not set.")
 		} else {
-			var components = NSCalendar.currentCalendar.components(.NSYearCalendarUnit, fromDate: dateOfBirth, toDate: NSDate.date, options: 0)
+			var components = NSCalendar.currentCalendar.components(.NSYearCalendarUnit, fromDate: dateOfBirth!, toDate: NSDate.date, options: 0)
 			callback(components.year, sex)
 		}
 	}
@@ -330,75 +330,81 @@ import HealthKit
 	
 	@IBAction func weightEditChanged(sender: Any?) {
 
-		if newValue.text.doubleValue < 10 {
-			addButton.hidden = false
-			addButton.alpha = 0.25
-			return
-		}
-		
-		let enteredWeight = newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue
-		
-		var oldWeight = NSUserDefaults.standardUserDefaults.floatForKey(CACHED_LAST_WEIGHT_VALUE_KEY)
-		if let oldWeightSample = cachedWeight {
-			oldWeight = oldWeightSample.quantity.doubleValueForUnit(DataAccess.weightUnit)
-		}
-
-		if oldWeight > 10 && enteredWeight > 99 {
-			let potentialNewWeight = enteredWeight/10
-			if oldWeight-potentialNewWeight > -10 && oldWeight-potentialNewWeight < 10 {
-				newValue.text = NSString.stringWithFormat("%0.1f", potentialNewWeight)
+		if let text = newValue.text {
+			
+			if text.doubleValue < 10 {
+				addButton.hidden = false
+				addButton.alpha = 0.25
+				return
 			}
-		}
 		
-		addButton.enabled = true
-		addButton.alpha = 10.0
+			let enteredWeight = text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue
+		
+			var oldWeight = NSUserDefaults.standardUserDefaults.floatForKey(CACHED_LAST_WEIGHT_VALUE_KEY)
+			if let oldWeightSample = cachedWeight {
+				oldWeight = oldWeightSample.quantity.doubleValueForUnit(DataAccess.weightUnit)
+			}
+
+			if oldWeight > 10 && enteredWeight > 99 {
+				let potentialNewWeight = enteredWeight/10
+				if oldWeight-potentialNewWeight > -10 && oldWeight-potentialNewWeight < 10 {
+					newValue.text = NSString.stringWithFormat("%0.1f", potentialNewWeight)
+				}
+			}
+		
+			addButton.enabled = true
+			addButton.alpha = 10.0
+		}
 	}
 	
 	@IBAction func add(sender: Any?) {
 		
 		weightEditChanged(sender)
 		
-		if newValue.text.doubleValue < 10 {
-			return
-		}
-		
-		last.text = "updating..."
-		bmi.text = "  "
-		info.text = "  "
-		
-		let date = NSDate.date		
-		let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: newValue.text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
-		let sample = HKQuantitySample.quantitySampleWithType(DataAccess.weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
-
-		self.newValue.text = ""
-		weightEditChanged(sender)
-		
-		getHeight() { height in
-			let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
-			let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-			let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+		if let text = newValue.text {
 			
-			let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
-			let bmisample = HKQuantitySample.quantitySampleWithType(self.bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
-			DataAccess.healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
+			if text.doubleValue < 10 {
+				return
+			}
+		
+			last.text = "updating..."
+			bmi.text = "  "
+			info.text = "  "
+		
+			let date = NSDate.date		
+			let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: text.stringByReplacingOccurrencesOfString(",", withString:".").doubleValue)
+			let sample = HKQuantitySample.quantitySampleWithType(DataAccess.weightQuantityType, quantity: weight, startDate: date, endDate: date, metadata: NSMutableDictionary())
+
+			self.newValue.text = ""
+			weightEditChanged(sender)
+		
+			getHeight() { height in
+				let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
+				let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+			
+				let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
+				let bmisample = HKQuantitySample.quantitySampleWithType(self.bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
+				DataAccess.healthStore.saveObject(bmisample, withCompletion: { (success: Bool, error: NSError?) in
+					if let e = error {
+						NSLog("error updating BMI: %@", error)
+					}
+				})
+			}
+		
+			DataAccess.healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
+		
 				if let e = error {
-					NSLog("error updating BMI: %@", error)
+					NSLog("error updating weight: %@", error)
+				} else {
+					//dispatch_async(dispatch_get_main_queue()) {
+					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
+					//}
+					self.getBMI()
 				}
+			
 			})
 		}
-		
-		DataAccess.healthStore.saveObject(sample, withCompletion: { (success: Bool, error: NSError?) in
-		
-			if let e = error {
-				NSLog("error updating weight: %@", error)
-			} else {
-				//dispatch_async(dispatch_get_main_queue()) {
-					//performSegueWithIdentifier("ShowDetails", sender: nil) //TESTCASE for 69436: Silver CC: CC shows wrong multipart method names
-				//}
-				self.getBMI()
-			}
-			
-		})  
 	}
 	
 	@IBAction func showDetails(sendr: Any?) {

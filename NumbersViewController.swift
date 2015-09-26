@@ -29,10 +29,11 @@ public class NumbersViewController : UITableViewController {
 	}
 	
 	func tableView(tableView: UITableView!, numberOfRowsInSection section: NSInteger) -> NSInteger {
-		//NSLog("data: %@", data)
-		//NSLog("morningValues: %@", data?.morningValues)
-		//NSLog("count: %ld", data?.morningValues?.count)
-		return data?.morningValues?.count
+		// workaround for 72424: Silver: NEW in ?. expression that should be null-safe
+		if data != nil && data?.morningValues != nil {
+			return data?.morningValues?.count
+		}
+		return 0;
 	}
 	
 	func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell {
@@ -67,9 +68,9 @@ public class WeightCellView : TPBaseCell {
 	
 	public override func drawRect(rect: CGRect) {
 
-		let mainFont = first ? UIFont.systemFontOfSize(26) : UIFont.fontWithName("HelveticaNeue-Light", size: 26)
-		let dataFont = first ? UIFont.boldSystemFontOfSize(26) : UIFont.systemFontOfSize(26)
-		let smallFont = UIFont.fontWithName("HelveticaNeue-Light",size: 13);
+		let mainFont = first ? UIFont.systemFontOfSize(26) : UIFont.fontWithName("HelveticaNeue-Light", size: 26)!
+		let dataFont = first ? UIFont.boldSystemFontOfSize(26) : UIFont.systemFontOfSize(26)!
+		let smallFont = UIFont.fontWithName("HelveticaNeue-Light",size: 13)!
 		
 		let mainAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.blackColor] 
 		let morningAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.redColor.colorWithAlphaComponent(0.75)] 
