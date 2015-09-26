@@ -9,6 +9,17 @@
 		application.statusBarStyle = UIStatusBarStyle.LightContent
 		return true
 	}
+	
+	func application(_ application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler completionHandler: (Bool) -> Void) {
+		if let navigationController = window?.rootViewController as? UINavigationController {
+			navigationController.popToRootViewControllerAnimated(false);
+			if shortcutItem.type.hasSuffix(".chart") {
+				navigationController.topViewController?.performSegueWithIdentifier("ShowDetails", sender: nil)
+			} else if shortcutItem.type.hasSuffix(".numbers") {
+				navigationController.topViewController?.performSegueWithIdentifier("ShowNumbers", sender: nil)
+			}
+		}
+	}
 
 	func applicationWillResignActive(application: UIApplication)
 	{

@@ -156,6 +156,7 @@ import HealthKit
 				morningValues = limitResults(morningValues, byFactor: 9)
 				eveningValues = limitResults(eveningValues, byFactor: 9)
 				lowestValues = limitResults(lowestValues, byFactor: 9)
+			default:
 		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
