@@ -208,22 +208,25 @@ import HealthKit
 		}
 		bezierPath.stroke()
 		
-		i = 0
-		for s in values {
-			if s is HKQuantitySample {
-				let point = pointForSample(s, atIndex: i)
-				let ovalPath = UIBezierPath.bezierPathWithOvalInRect(CGRectMake(point.x-CIRCLE_SIZE, point.y-CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2)) // silver bug!
-				ovalPath.fill()
-				ovalPath.stroke()
-				//lastPoint = point
+		if drawCircles {
+			i = 0
+			for s in values {
+				if s is HKQuantitySample {
+					let point = pointForSample(s, atIndex: i)
+					let ovalPath = UIBezierPath.bezierPathWithOvalInRect(CGRectMake(point.x-CIRCLE_SIZE, point.y-CIRCLE_SIZE, CIRCLE_SIZE*2, CIRCLE_SIZE*2)) // silver bug!
+					ovalPath.fill()
+					ovalPath.stroke()
+					//lastPoint = point
+				}
+				i++
 			}
-			i++
 		}
 	}
 	
 	var mornings: NSArray!
 	var evenings: NSArray!
 	var lowest: NSArray!
+	var drawCircles: Bool = true
 
 	private var startX: CGFloat = 0
 	private var startY: CGFloat = 0

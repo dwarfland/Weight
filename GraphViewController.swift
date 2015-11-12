@@ -62,6 +62,7 @@ import HealthKit
 			case 1: daysNeeded = 31
 			case 2: daysNeeded = 93
 			case 3: daysNeeded = 360
+			default: return
 		}
 		
 		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
@@ -167,6 +168,7 @@ import HealthKit
 			} else {
 				self.chartView.lowest = nil
 			}
+			self.chartView.drawCircles = self.segments.selectedSegmentIndex < 2
 			self.chartView.dataChanged()
 		}
 		

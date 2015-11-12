@@ -19,6 +19,7 @@
 				navigationController.topViewController?.performSegueWithIdentifier("ShowNumbers", sender: nil)
 			}
 		}
+		completionHandler(true);
 	}
 
 	func applicationWillResignActive(application: UIApplication)

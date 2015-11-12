@@ -20,6 +20,7 @@
         <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
         <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
         <ProvisioningProfile>4f1592e8-8f2c-4e5a-8568-4a6382a32c80</ProvisioningProfile>
+        <BundleVersion>1.7.2</BundleVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -82,8 +83,17 @@
         <AppResource Include="Resources\Settings.bundle"/>
         <Compile Include="NumbersViewController.swift"/>
         <Compile Include="DataAccess.swift"/>
-        <Compile Include="..\TwinPeaks\iOS\Oxygene\TPBaseCell.pas"/>
-        <Compile Include="..\TwinPeaks\iOS\Oxygene\TPBaseCellView.pas"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-chart.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-chart@2x.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-chart@3x.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-numbers.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-numbers@2x.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-numbers@3x.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-add.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-add@2x.png"/>
+        <AppResource Include="Resources\Shortcut Images\shortcut-add@3x.png"/>
+        <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas"/>
+        <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas"/>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)/RemObjects Software/Oxygene/RemObjects.Oxygene.Nougat.targets"/>
 </Project>
