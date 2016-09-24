@@ -46,13 +46,13 @@
         <ProvisioningProfile>495431d9-6720-4645-8473-033d96bc43ad</ProvisioningProfile>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="CoreGraphics.fx"/>
-        <Reference Include="Foundation.fx"/>
-        <Reference Include="UIKit.fx"/>
-        <Reference Include="rtl.fx"/>
-        <Reference Include="libNougat.fx"/>
-        <Reference Include="libSwift.fx"/>
-        <Reference Include="HealthKit.fx"/>
+        <Reference Include="CoreGraphics"/>
+        <Reference Include="Foundation"/>
+        <Reference Include="UIKit"/>
+        <Reference Include="rtl"/>
+        <Reference Include="libNougat"/>
+        <Reference Include="libSwift"/>
+        <Reference Include="HealthKit"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AppDelegate.swift"/>
@@ -95,5 +95,5 @@
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas"/>
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas"/>
     </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)/RemObjects Software/Oxygene/RemObjects.Oxygene.Nougat.targets"/>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Nougat.targets"/>
 </Project>
