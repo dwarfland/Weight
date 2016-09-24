@@ -14,14 +14,13 @@ public class NumbersViewController : UITableViewController {
 	private var data: CollectedWeightData?
 
 	private func updateData() { 
-		//DataAccess.getData(days: 365) { (data: CollectedWeightData?) in  // 70912: Silver: can't use trailing closure syntax on static
-		DataAccess.sharedInstance.getData(days: 365, callback: { (newData: CollectedWeightData?) in 
+		DataAccess.sharedInstance.getData(days: 365) { (newData: CollectedWeightData?) in
 
 			dispatch_async(dispatch_get_main_queue()) { 
 				self.data = newData
 				self.tableView.reloadData() 
 			}
-		})
+		}
 	}
 	
 	func numberOfSectionsInTableView(tableView: UITableView!) -> NSInteger {
@@ -29,9 +28,8 @@ public class NumbersViewController : UITableViewController {
 	}
 	
 	func tableView(tableView: UITableView!, numberOfRowsInSection section: NSInteger) -> NSInteger {
-		// workaround for 72424: Silver: NEW in ?. expression that should be null-safe
-		if data != nil && data?.morningValues != nil {
-			return data?.morningValues?.count
+		if let morningValues = data?.morningValues {
+			return morningValues.count
 		}
 		return 0;
 	}
