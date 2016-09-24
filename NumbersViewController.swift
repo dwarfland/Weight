@@ -3,7 +3,7 @@ import UIKit
 import TwinPeaks
 import HealthKit
 
-public class NumbersViewController : UITableViewController {
+@IBObject public class NumbersViewController : UITableViewController {
 
 	public override func viewDidLoad() {
 		title = "Numbers"
@@ -14,8 +14,7 @@ public class NumbersViewController : UITableViewController {
 	private var data: CollectedWeightData?
 
 	private func updateData() { 
-		DataAccess.sharedInstance.getData(days: 365) { (newData: CollectedWeightData?) in
-
+		DataAccess.sharedInstance.getData(days: 1000) { (newData: CollectedWeightData?) in
 			dispatch_async(dispatch_get_main_queue()) { 
 				self.data = newData
 				self.tableView.reloadData() 
@@ -23,20 +22,20 @@ public class NumbersViewController : UITableViewController {
 		}
 	}
 	
-	func numberOfSectionsInTableView(tableView: UITableView!) -> NSInteger {
+	func numberOfSectionsInTableView(_ tableView: UITableView!) -> NSInteger {
 		return 1
 	}
 	
-	func tableView(tableView: UITableView!, numberOfRowsInSection section: NSInteger) -> NSInteger {
+	func tableView(_ tableView: UITableView!, numberOfRowsInSection section: NSInteger) -> NSInteger {
 		if let morningValues = data?.morningValues {
 			return morningValues.count
 		}
 		return 0;
 	}
 	
-	func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell {
+	func tableView(_ tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell {
 		
-		let result = TPBaseCell(style: .UITableViewCellStyleSubtitle, viewClass: WeightCellView.Type)
+		let result = TPBaseCell(style: .UITableViewCellStyleSubtitle, viewClass: typeOf(WeightCellView))
 		
 		(result.view as! WeightCellView).first = indexPath.row == 0
 		
@@ -64,7 +63,7 @@ public class WeightCellView : TPBaseCell {
 	var date: NSDate!
 	
 	
-	public override func drawRect(rect: CGRect) {
+	public override func drawRect(_ rect: CGRect) {
 
 		let mainFont = first ? UIFont.systemFontOfSize(26) : UIFont.fontWithName("HelveticaNeue-Light", size: 26)!
 		let dataFont = first ? UIFont.boldSystemFontOfSize(26) : UIFont.systemFontOfSize(26)!

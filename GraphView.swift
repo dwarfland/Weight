@@ -2,8 +2,16 @@
 import HealthKit
 
 @IBObject public class GraphView : UIView {
+	
+	func drawGrayLineAt(y: CGFloat) {
+		let maxBezierPath = UIBezierPath()
+		maxBezierPath.moveToPoint(CGPointMake(startX, y))
+		maxBezierPath.addLineToPoint(CGPointMake(endX, y))
+		UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
+		maxBezierPath.stroke()
+	}
 
-	public override func drawRect(rect: CGRect) {
+	public override func drawRect(_ rect: CGRect) {
 		
 		let font = UIFont.systemFontOfSize(10)
 		
@@ -33,6 +41,16 @@ import HealthKit
 				maxBezierPath.addLineToPoint(CGPointMake(endX, maxY))
 				UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
 				maxBezierPath.stroke()
+				
+				let lastMorningsY = yForSample(mornings.firstObject!) // data is reversed
+				let lastEveningsY = yForSample(mornings.firstObject!) // data is reversed
+				
+				if (lastMorningsY != minY && lastMorningsY != maxY) {
+					drawGrayLineAt(y: lastMorningsY)
+				}
+				if (lastEveningsY != minY && lastEveningsY != maxY && lastEveningsY != lastMorningsY) {
+					drawGrayLineAt(y: lastEveningsY)
+				}
 	
 				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, DataAccess.weightUnit.unitString)
 				let maxSize = maxText.sizeWithAttributes(grayAttributes)
@@ -40,12 +58,12 @@ import HealthKit
 			}
 
 			if lowest != nil {
-				drawGraphFor(lowest, withColor: UIColor.greenColor)
+				drawGraphFor(values: lowest, withColor: UIColor.greenColor)
 			}
-			drawGraphFor(mornings, withColor: UIColor.redColor)//.colorWithAlphaComponent(0.5))
-			drawGraphFor(evenings, withColor: UIColor.blueColor)
+			drawGraphFor(values: mornings, withColor: UIColor.redColor)//.colorWithAlphaComponent(0.5))
+			drawGraphFor(values: evenings, withColor: UIColor.blueColor)
 			
-			if lowest != nil {
+			if drawDifferences {
 				var morningString = diffStringBetweenOldValue(mornings[1], newValue: mornings[0])
 				var eveningString = diffStringBetweenOldValue(evenings[1], newValue: evenings[0])
 
@@ -138,14 +156,18 @@ import HealthKit
 		return nil
 	}
 	
+	func yForSample(_ s: HKQuantitySample) -> CGFloat { //TODO: drop _
+		return yOffsetForValue(s.quantity.doubleValueForUnit(DataAccess.weightUnit))
+	}
+
 	func pointForSample(_ s: HKQuantitySample, atIndex i: Int) -> CGPoint{ //TODO: drop _
-		var y = yOffsetForValue(s.quantity.doubleValueForUnit(DataAccess.weightUnit))
+		var y = yForSample(s)
 		var x = endX - i*offsetX
 		
 		return CGPointMake(x,y)	
 	}
 	
-	func yOffsetForValue(v: CGFloat) -> CGFloat {
+	func yOffsetForValue(_ v: CGFloat) -> CGFloat {
 		var  y = v
 		y -= min
 		y = sizeY - y / (max-min) * sizeY
@@ -154,15 +176,14 @@ import HealthKit
 		
 	}
 	
-	private func drawGraphFor(_ values: NSArray, withColor color: UIColor) { //TODO: drop _
+	private func drawGraphFor(values: NSArray, withColor color: UIColor) {
 		//var lastPoint: CGPoint = CGPointMake(0.0, 0.0)
 		UIColor.whiteColor.setFill()
 		color.setStroke()
 		
-		var i = 0
-		var first= true
+		var first = true
 		let bezierPath = UIBezierPath()
-		for i = 0; i < values.count; i++ {
+		for i in 0 ..< values.count {
 			var s = values[i]
 			if s is HKQuantitySample {
 
@@ -209,7 +230,7 @@ import HealthKit
 		bezierPath.stroke()
 		
 		if drawCircles {
-			i = 0
+			var i = 0
 			for s in values {
 				if s is HKQuantitySample {
 					let point = pointForSample(s, atIndex: i)
@@ -218,7 +239,7 @@ import HealthKit
 					ovalPath.stroke()
 					//lastPoint = point
 				}
-				i++
+				i += 1
 			}
 		}
 	}
@@ -227,6 +248,7 @@ import HealthKit
 	var evenings: NSArray!
 	var lowest: NSArray!
 	var drawCircles: Bool = true
+	var drawDifferences: Bool = true
 
 	private var startX: CGFloat = 0
 	private var startY: CGFloat = 0

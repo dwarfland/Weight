@@ -6,26 +6,34 @@ import HealthKit
 	public override func viewDidLoad() {
 		title = "Chart"
 		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
-		segments.selectedSegmentIndex = 1 // todo. persist later, for now select Month
+		
+		if let index = UserDefaults.standardUserDefaults.objectForKey(KEY_SELECTED_CHART_SEGMENT) {
+			segments.selectedSegmentIndex = index.integerValue
+		} else {
+			segments.selectedSegmentIndex = 1
+		}
 
 		if navigationItem.rightBarButtonItem == nil {
-			navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Numbers", style: .Plain, target: self, action: "showNumbers:")
+			navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Numbers", style: .Plain, target: self, action: #selector(showNumbers:))
 		}
 
 		updateData()
 	}
 	
-	@IBAction func showNumbers(sendr: Any?) {
+	@IBAction func showNumbers(_ sender: Any?) {
 		performSegueWithIdentifier("ShowNumbers", sender: nil)
 	}
 
 	@IBOutlet var segments: UISegmentedControl!
 	@IBOutlet var chartView: GraphView!
 	
-	@IBAction func segmentsChanged(sender: Any?) {
+	@IBAction func segmentsChanged(_ sender: Any?) {
 		clearResults()
+		UserDefaults.standardUserDefaults.setInteger(segments.selectedSegmentIndex, forKey: KEY_SELECTED_CHART_SEGMENT)
 		updateData()
 	}
+	
+	static let KEY_SELECTED_CHART_SEGMENT = "SelectedChartSegment"
 	
 	private func updateData() { 
 
@@ -34,7 +42,7 @@ import HealthKit
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
 							  predicate: nil, 
-							  limit: 1000, 
+							  limit: 10000, 
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
@@ -54,7 +62,7 @@ import HealthKit
 		DataAccess.healthStore.executeQuery(q)	
 	}
 	
-	private func processResults(values: NSArray) {
+	private func processResults(_ values: NSArray) {
 		
 		var daysNeeded = 0
 		switch segments.selectedSegmentIndex {
@@ -62,6 +70,7 @@ import HealthKit
 			case 1: daysNeeded = 31
 			case 2: daysNeeded = 93
 			case 3: daysNeeded = 360
+			case 4: daysNeeded = 756
 			default: return
 		}
 		
@@ -144,20 +153,21 @@ import HealthKit
 		}
 		
 		switch segments.selectedSegmentIndex {
-			case 0: 
-				daysNeeded = 7
-			case 1: 
-				daysNeeded = 31
-			case 2: 
-				daysNeeded = 93
-				morningValues = limitResults(morningValues, byFactor: 3)
+			case 0: break;
+			case 1: break;
+			case 2: break;
+				/*morningValues = limitResults(morningValues, byFactor: 3)
 				eveningValues = limitResults(eveningValues, byFactor: 3)
-				lowestValues = limitResults(lowestValues, byFactor: 3)
-			case 3: daysNeeded = 365
+				lowestValues = limitResults(lowestValues, byFactor: 3)*/
+			case 3:
 				morningValues = limitResults(morningValues, byFactor: 9)
 				eveningValues = limitResults(eveningValues, byFactor: 9)
 				lowestValues = limitResults(lowestValues, byFactor: 9)
-			default:
+			case 4:
+				morningValues = limitResults(morningValues, byFactor: 18)
+				eveningValues = limitResults(eveningValues, byFactor: 18)
+				lowestValues = limitResults(lowestValues, byFactor: 18)
+			default: break;
 		}
 		
 		dispatch_async(dispatch_get_main_queue()) {
@@ -168,7 +178,8 @@ import HealthKit
 			} else {
 				self.chartView.lowest = nil
 			}
-			self.chartView.drawCircles = self.segments.selectedSegmentIndex < 2
+			self.chartView.drawCircles = self.segments.selectedSegmentIndex < 3
+			self.chartView.drawDifferences = self.segments.selectedSegmentIndex < 3
 			self.chartView.dataChanged()
 		}
 		
@@ -180,14 +191,14 @@ import HealthKit
 		while i < values.count {
 			var average = 0.0
 			var valueCount = 0
-			for var j = 0; j < factor; j++ {
+			for j in 0 ..< factor {
 				let s = values[i]
 				if s is HKQuantitySample {
 					let q = s.quantity.doubleValueForUnit(DataAccess.weightUnit)
 					average += q
-					valueCount++
+					valueCount += 1
 				}
-				i++
+				i += 1
 			}
 			if valueCount > 0 {
 				let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: average/valueCount)

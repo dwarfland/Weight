@@ -1,7 +1,7 @@
 ﻿import Foundation
 import HealthKit
 
-let MAX_DAYS = 1000
+let MAX_DAYS = 10000
 
 typealias WeightDataCallback = (CollectedWeightData?) -> ()
 
@@ -43,7 +43,7 @@ public class DataAccess {
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: weightQuantityType, 
 							  predicate: nil, 
-							  limit: MAX_DAYS*3, 
+							  limit: MAX_DAYS*4, 
 							  sortDescriptors: [descriptor],
 							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
 							  
@@ -57,7 +57,7 @@ public class DataAccess {
 				if results?.count > 0 {
 					//callback(results)*/
 					//NSLog("calling processResults")
-					self.processResults(results!, daysNeeded: days, callback: callback)
+					self.process(results: results!, daysNeeded: days, callback: callback)
 				/*} else {
 					NSLog("calling back with nil (b)")
 					callback(nil)
@@ -68,7 +68,7 @@ public class DataAccess {
 		DataAccess.healthStore.executeQuery(q) 
 	}
 	
-	func processResults(values: NSArray, daysNeeded: Int, callback: (CollectedWeightData?) -> ()) {
+	func process(results values: NSArray, daysNeeded: Int, callback: (CollectedWeightData?) -> ()) {
 		
 		//NSLog("processResults")
 		
@@ -191,14 +191,14 @@ public class CollectedWeightData {
 		while i < values.count {
 			var average = 0.0
 			var valueCount = 0
-			for var j = 0; j < factor; j++ {
+			for j in 0 ..< factor {
 				let s = values[i]
 				if s is HKQuantitySample {
 					let q = s.quantity.doubleValueForUnit(DataAccess.weightUnit)
 					average += q
-					valueCount++
+					valueCount += 1
 				}
-				i++
+				i += 1
 			}
 			if valueCount > 0 {
 				let weight = HKQuantity.quantityWithUnit(DataAccess.weightUnit, doubleValue: average/valueCount)

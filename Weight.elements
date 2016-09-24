@@ -20,7 +20,7 @@
         <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
         <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
         <ProvisioningProfile>4f1592e8-8f2c-4e5a-8568-4a6382a32c80</ProvisioningProfile>
-        <BundleVersion>1.7.2</BundleVersion>
+        <BundleVersion>1.8.0</BundleVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -32,6 +32,9 @@
         <EnableAsserts>True</EnableAsserts>
         <CreateIPA>True</CreateIPA>
         <Architecture>arm64</Architecture>
+        <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
+        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
+        <ProvisioningProfile>83b04411-536c-465b-a6c9-3a1be7801c06</ProvisioningProfile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <Optimize>False</Optimize>
@@ -50,7 +53,7 @@
         <Reference Include="Foundation"/>
         <Reference Include="UIKit"/>
         <Reference Include="rtl"/>
-        <Reference Include="libNougat"/>
+        <Reference Include="libToffee"/>
         <Reference Include="libSwift"/>
         <Reference Include="HealthKit"/>
     </ItemGroup>
@@ -95,5 +98,5 @@
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas"/>
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas"/>
     </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Nougat.targets"/>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
 </Project>

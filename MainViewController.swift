@@ -26,7 +26,7 @@ import HealthKit
 		info.text = "  "
 		newValue.becomeFirstResponder()
 		weightEditChanged(nil)
-		
+
 		let readTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, heightQuantityType, dateOfBirthCharacteristicType, biologicalSexCharacteristicType, nil)
 		let writeTypes = NSSet.setWithObjects(DataAccess.weightQuantityType, bmiQuantityType, nil)
 		DataAccess.healthStore.requestAuthorizationToShareTypes(writeTypes, readTypes: readTypes, completion: { success, error in 
@@ -46,7 +46,7 @@ import HealthKit
 	
 	let CACHED_LAST_WEIGHT_VALUE_KEY = "CACHED_LAST_WEIGHT_VALUE"
 	
-	func relativeStringForDate(date: NSDate) -> String {
+	func relativeStringForDate(_ date: NSDate) -> String {
 		
 		let diff = -date.timeIntervalSinceNow
 		if diff < 5*60 {
@@ -66,9 +66,11 @@ import HealthKit
 	
 	private var getWeightVersion: Int = 0
 	private var cachedWeight: HKQuantitySample?
-	func getWeight(callback: (HKQuantitySample) -> () = nil) {
+	
+	func getWeight(callback: ((HKQuantitySample) -> ())? = nil) {
 		
-		let currentGetWeightVersion = ++getWeightVersion;
+		getWeightVersion += 1
+		let currentGetWeightVersion = getWeightVersion;
 		let date = NSDate.date;
 		
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
@@ -105,9 +107,10 @@ import HealthKit
 	
 	private var getHeightVersion: Int = 0
 	private var cachedHeight: HKQuantitySample?
-	func getHeight(callback: (HKQuantitySample) -> () = nil) {
+	func getHeight(callback: ((HKQuantitySample) -> ())? = nil) {
 		
-		let currentGetHeightVersion = ++self.getHeightVersion;
+		self.getHeightVersion += 1
+		let currentGetHeightVersion = self.getHeightVersion;
 
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: heightQuantityType, 
@@ -138,7 +141,7 @@ import HealthKit
 		DataAccess.healthStore.executeQuery(q)	
 	}
 	
-	func getAgeAndSex(callback: (Int, HKBiologicalSex) -> () = nil) {
+	func getAgeAndSex(callback: ((Int, HKBiologicalSex) -> ())? = nil) {
 		
 		var error: NSError?
 		var sex: HKBiologicalSex = .NotSet
@@ -195,11 +198,11 @@ import HealthKit
 
 	func addChartButton() {
 		if self.navigationItem.rightBarButtonItem == nil {
-			self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: "showDetails:")
+			self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chart", style: .Plain, target: self, action: #selector(showDetails:))
 		}
 	}
 
-	public func getBMI(callback: (Double, String) -> () = nil) {
+	public func getBMI(callback: ((Double, String) -> ())? = nil) {
 
 		getWeight() { weight in 
 		
@@ -217,7 +220,7 @@ import HealthKit
 				if weightInKg > 10 {
 				
 					let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-					let bmiValue = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+					let bmiValue = self.calculateBMIFrom(weight: weightInKg, height: heightInM)
 					self.bmi.text = NSString.stringWithFormat("Your BMI is %0.2f.", bmiValue)
 					self.info.text = "  "
 					
@@ -232,7 +235,7 @@ import HealthKit
 							//
 							if sex == HKBiologicalSex.Female {
 								if effectiveBmiValue < 28 { // anything below 30 is one less for females
-									effectiveBmiValue++;
+									effectiveBmiValue += 1;
 								}
 							}
 								 
@@ -240,7 +243,7 @@ import HealthKit
 							// adjust for age, based on http://www.bmi-rechner.net
 							//
 							if age <= 24 {
-								effectiveBmiValue++;
+								effectiveBmiValue += 1;
 							} else if age <= 34 {
 								// keep
 							} else if age <= 44 {
@@ -297,7 +300,7 @@ import HealthKit
 		}
 	}
 	
-	func calculateBMIFromWeight(weight: Double, height: Double) -> Double {
+	func calculateBMIFrom(weight: Double, height: Double) -> Double {
 		return weight / (height*height)
 	}
 	
@@ -328,7 +331,7 @@ import HealthKit
 	// Actions
 	//
 	
-	@IBAction func weightEditChanged(sender: Any?) {
+	@IBAction func weightEditChanged(_ sender: Any?) {
 
 		if let text = newValue.text {
 			
@@ -357,7 +360,7 @@ import HealthKit
 		}
 	}
 	
-	@IBAction func add(sender: Any?) {
+	@IBAction func add(_ sender: Any?) {
 		
 		weightEditChanged(sender)
 		
@@ -381,7 +384,7 @@ import HealthKit
 			getHeight() { height in
 				let weightInKg = weight.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
 				let heightInM = height.quantity.doubleValueForUnit(HKUnit.meterUnit)
-				let bmi = self.calculateBMIFromWeight(weightInKg, height: heightInM)
+				let bmi = self.calculateBMIFrom(weight: weightInKg, height: heightInM)
 			
 				let bmiQuantity = HKQuantity.quantityWithUnit(HKUnit.countUnit, doubleValue: bmi)
 				let bmisample = HKQuantitySample.quantitySampleWithType(self.bmiQuantityType, quantity: bmiQuantity, startDate: date, endDate: date, metadata: NSMutableDictionary())
@@ -407,7 +410,7 @@ import HealthKit
 		}
 	}
 	
-	@IBAction func showDetails(sendr: Any?) {
+	@IBAction func showDetails(_ sender: Any?) {
 		performSegueWithIdentifier("ShowDetails", sender: nil)
 	}
 }

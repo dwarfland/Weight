@@ -46,6 +46,10 @@
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
 		</array>
+		<key>NSHealthUpdateUsageDescription</key>
+		<string>Weight allow you to update your weight and BMI in HeathKit with new values you enter.</string>
+		<key>NSHealthShareUsageDescription</key>
+		<string>Weight will show your weight history as a chart and table.</string>
 		<key>UIApplicationShortcutItems</key>
 		<array>
 			<dict>
