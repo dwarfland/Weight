@@ -1,0 +1,19 @@
+New in Version 1.7:
+
+* Support for 3D Touch Application Shortcuts on iPhones 6S and 6S Plus.
+* Visual tweaks to the chart view
+
+New in Version 1.6:
+
+* No longer need to type decimal point when entering new weight
+* Caches last weight so it can show value after restart w/o waiting for HealthKit data
+* Show "waiting" message as chart loads data from HealthKit, which can be slow
+* Other minor UI improvements and streamlining
+* Fixed rare crash on startup if Date of Birth was not set in HealthKit
+
+New in version 1.5: 
+* New "Numbers" view to explore your weight history numerically in addition to the well-beloved chart view.
+* Evaluation/classification of your BMI based on your age and gender, if you let Weight have access to that information.
+
+New in version 1.1: 
+* Weight now calculates, shows and stores your BMI in HealthKit (if your height is entered in Health app).

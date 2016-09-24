@@ -1,0 +1,11 @@
+The easy way to track your weight and BMI with iOS 8's new HealthKit with a single tap.
+
+Weight provides two essential features for keeping track of your weight:
+
+1. It makes it really easy to enter the latest measurement with just a few taps. Open app, tap the number, tap Add — done.
+
+2. It shows a convenient graphical history view, charting both the first and the last weight measurement of each day.
+
+3. Updates HealthKit with both your weight and your automatically calculated BMI in one go.
+
+Proudly created with RemObjects Silver

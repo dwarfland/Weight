@@ -32,7 +32,6 @@
         <EnableAsserts>True</EnableAsserts>
         <CreateIPA>True</CreateIPA>
         <Architecture>arm64</Architecture>
-        <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
         <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
         <ProvisioningProfile>83b04411-536c-465b-a6c9-3a1be7801c06</ProvisioningProfile>
     </PropertyGroup>
