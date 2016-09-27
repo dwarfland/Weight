@@ -18,9 +18,9 @@
         <EnableAsserts>False</EnableAsserts>
         <GenerateDebugInfo>True</GenerateDebugInfo>
         <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
-        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
-        <ProvisioningProfile>4f1592e8-8f2c-4e5a-8568-4a6382a32c80</ProvisioningProfile>
-        <BundleVersion>1.8.0</BundleVersion>
+        <ProvisioningProfileName>Weight Develop (2016)</ProvisioningProfileName>
+        <ProvisioningProfile>fbfa8dac-9c65-4d1c-8743-3300897961bc</ProvisioningProfile>
+        <BundleVersion>1.8.1</BundleVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -32,8 +32,8 @@
         <EnableAsserts>True</EnableAsserts>
         <CreateIPA>True</CreateIPA>
         <Architecture>arm64</Architecture>
-        <ProvisioningProfileName>Weight Develop</ProvisioningProfileName>
-        <ProvisioningProfile>83b04411-536c-465b-a6c9-3a1be7801c06</ProvisioningProfile>
+        <ProvisioningProfileName>Weight Develop (2016)</ProvisioningProfileName>
+        <ProvisioningProfile>fbfa8dac-9c65-4d1c-8743-3300897961bc</ProvisioningProfile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <Optimize>False</Optimize>
@@ -45,7 +45,7 @@
         <GenerateDSym>True</GenerateDSym>
         <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
         <ProvisioningProfileName>Weight App Store</ProvisioningProfileName>
-        <ProvisioningProfile>495431d9-6720-4645-8473-033d96bc43ad</ProvisioningProfile>
+        <ProvisioningProfile>99b76863-9c67-4956-bf28-68bda9cb4b51</ProvisioningProfile>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="CoreGraphics"/>

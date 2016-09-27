@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 
 <plist version="1.0">
@@ -50,6 +50,8 @@
 		<string>Weight allow you to update your weight and BMI in HeathKit with new values you enter.</string>
 		<key>NSHealthShareUsageDescription</key>
 		<string>Weight will show your weight history as a chart and table.</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>UIApplicationShortcutItems</key>
 		<array>
 			<dict>

@@ -42,14 +42,18 @@ import HealthKit
 				UIColor.lightGrayColor.colorWithAlphaComponent(0.25).setStroke()
 				maxBezierPath.stroke()
 				
-				let lastMorningsY = yForSample(mornings.firstObject!) // data is reversed
-				let lastEveningsY = yForSample(mornings.firstObject!) // data is reversed
-				
-				if (lastMorningsY != minY && lastMorningsY != maxY) {
-					drawGrayLineAt(y: lastMorningsY)
-				}
-				if (lastEveningsY != minY && lastEveningsY != maxY && lastEveningsY != lastMorningsY) {
-					drawGrayLineAt(y: lastEveningsY)
+				if let currentMorning = mornings.firstObject!, currentMorning != NSNull.null { // data is reversed
+					let lastMorningsY = yForSample(currentMorning) 
+					if (lastMorningsY != minY && lastMorningsY != maxY) {
+						drawGrayLineAt(y: lastMorningsY)
+					}
+
+					if let currentEvening = evenings.firstObject!, currentEvening != NSNull.null {  // data is reversed
+						let lastEveningsY = yForSample(currentEvening)
+						if (lastEveningsY != minY && lastEveningsY != maxY && lastEveningsY != lastMorningsY) {
+							drawGrayLineAt(y: lastEveningsY)
+						}
+					}
 				}
 	
 				let maxText = NSString.stringWithFormat("%0.1f%@", realMax, DataAccess.weightUnit.unitString)
