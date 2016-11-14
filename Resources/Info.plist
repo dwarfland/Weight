@@ -3,16 +3,6 @@
 
 <plist version="1.0">
 	<dict>
-		<key>CFBundleIcons</key>
-		<dict>
-			<key>CFBundlePrimaryIcon</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>App-120.png</string>
-				</array>
-			</dict>
-		</dict>
 		<key>UIDeviceFamily</key>
 		<array>
 			<integer>1</integer>

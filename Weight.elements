@@ -20,7 +20,7 @@
         <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
         <ProvisioningProfileName>Weight Develop (2016)</ProvisioningProfileName>
         <ProvisioningProfile>fbfa8dac-9c65-4d1c-8743-3300897961bc</ProvisioningProfile>
-        <BundleVersion>1.8.1</BundleVersion>
+        <BundleVersion>1.8.2</BundleVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -62,22 +62,7 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="Resources\Info.plist"/>
-        <AppResource Include="Resources\App Icons\App-29.png"/>
-        <AppResource Include="Resources\App Icons\App-40.png"/>
-        <AppResource Include="Resources\App Icons\App-48.png"/>
-        <AppResource Include="Resources\App Icons\App-57.png"/>
-        <AppResource Include="Resources\App Icons\App-58.png"/>
-        <AppResource Include="Resources\App Icons\App-72.png"/>
-        <AppResource Include="Resources\App Icons\App-76.png"/>
-        <AppResource Include="Resources\App Icons\App-80.png"/>
-        <AppResource Include="Resources\App Icons\App-96.png"/>
-        <AppResource Include="Resources\App Icons\App-114.png"/>
-        <AppResource Include="Resources\App Icons\App-120.png"/>
-        <AppResource Include="Resources\App Icons\App-144.png"/>
-        <AppResource Include="Resources\App Icons\App-152.png"/>
         <Storyboard Include="Resources\MainStoryboard.storyboard"/>
-        <None Include="Resources\App Icons\App-512.png"/>
-        <None Include="Resources\App Icons\App-1024.png"/>
         <AppResource Include="Resources\Launch Images\Default-568h@2x.png"/>
         <Compile Include="GraphViewController.swift"/>
         <Compile Include="GraphView.swift"/>
@@ -96,6 +81,9 @@
         <AppResource Include="Resources\Shortcut Images\shortcut-add@3x.png"/>
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas"/>
         <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas"/>
+        <AssetCatalog Include="Resources\Images.xcassets">
+            <AppIcon>AppIcon</AppIcon>
+        </AssetCatalog>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
 </Project>
