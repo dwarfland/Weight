@@ -6,7 +6,7 @@ import HealthKit
 	public override func viewDidLoad() {
 		title = "Chart"
 		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
-		
+
 		if let index = UserDefaults.standardUserDefaults.objectForKey(KEY_SELECTED_CHART_SEGMENT) {
 			segments.selectedSegmentIndex = index.integerValue
 		} else {
@@ -19,33 +19,33 @@ import HealthKit
 
 		updateData()
 	}
-	
+
 	@IBAction func showNumbers(_ sender: Any?) {
 		performSegueWithIdentifier("ShowNumbers", sender: nil)
 	}
 
 	@IBOutlet var segments: UISegmentedControl!
 	@IBOutlet var chartView: GraphView!
-	
+
 	@IBAction func segmentsChanged(_ sender: Any?) {
 		clearResults()
 		UserDefaults.standardUserDefaults.setInteger(segments.selectedSegmentIndex, forKey: KEY_SELECTED_CHART_SEGMENT)
 		updateData()
 	}
-	
+
 	static let KEY_SELECTED_CHART_SEGMENT = "SelectedChartSegment"
-	
-	private func updateData() { 
+
+	private func updateData() {
 
 		let date = NSDate.date;
 
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
-		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType, 
-							  predicate: nil, 
-							  limit: 10000, 
+		let q = HKSampleQuery(sampleType: DataAccess.weightQuantityType,
+							  predicate: nil,
+							  limit: 10000,
 							  sortDescriptors: [descriptor],
-							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in 
-							  
+							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in
+
 			NSLog("-- updateData took %f, %ld records", -date.timeIntervalSinceNow, results != nil ? results!.count : -1);
 
 			if let e = error {
@@ -57,47 +57,48 @@ import HealthKit
 					self.clearResults()
 				}
 			}
-		})   
-				
-		DataAccess.healthStore.executeQuery(q)	
+		})
+
+		DataAccess.healthStore.executeQuery(q)
 	}
-	
+
 	private func processResults(_ values: NSArray) {
-		
+
 		var daysNeeded = 0
 		switch segments.selectedSegmentIndex {
 			case 0: daysNeeded = 7
 			case 1: daysNeeded = 31
 			case 2: daysNeeded = 93
 			case 3: daysNeeded = 360
-			case 4: daysNeeded = 756
+			case 4: daysNeeded = 756*3
 			default: return
 		}
-		
+
 		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var evenings = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var lowest = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var lastValue: HKQuantitySample?
-		var lowestValue: HKQuantitySample?
+		var lastValue: HKQuantitySample? = nil
+		var lowestValue: HKQuantitySample? = nil
 		var lastDateComps: NSDateComponents? = nil
-		
+
 		for val in values {
-			
+
 			var sameDay = false
 			let newComps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit | NSCalendarUnit.MonthCalendarUnit | NSCalendarUnit.YearCalendarUnit, fromDate: val.endDate)
 			if let oldComps = lastDateComps {
 				sameDay = newComps.day == oldComps.day && newComps.month == oldComps.month && newComps.year == oldComps.year
 			}
 			lastDateComps = newComps
-			
+
 			if !sameDay{
 				if lastValue != nil {
 					mornings.addObject(lastValue!)
 				} else {
 					// first value ever
 				}
-				if lowestValue != nil {
-					lowest.addObject(lowestValue!)
+				var low2 = lowestValue
+				if low2 != nil {
+					lowest.addObject(low2)
 					lowestValue = nil
 				} else {
 					// first value ever
@@ -109,20 +110,20 @@ import HealthKit
 				lowestValue = val;
 			}
 		}
-		
+
 		var morningValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var eveningValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 		var lowestValues = NSMutableArray.arrayWithCapacity(daysNeeded)
 
 		let minusOneDayComps = NSDateComponents()
 		minusOneDayComps.day = -1
-		
+
 		var date = NSDate.date
 		for var i = daysNeeded-1; i >= 0; i-- {
-			
+
 			let dateComps = NSCalendar.currentCalendar.components(NSCalendarUnit.DayCalendarUnit | NSCalendarUnit.MonthCalendarUnit | NSCalendarUnit.YearCalendarUnit, fromDate: date)
 			date = NSCalendar.currentCalendar.dateByAddingComponents(minusOneDayComps, toDate: date, options: 0)
-			
+
 			var morning: Any = NSNull.null
 			var evening: Any = NSNull.null
 			var lowestVal: Any = NSNull.null
@@ -151,7 +152,7 @@ import HealthKit
 			eveningValues.addObject(evening)
 			lowestValues.addObject(lowestVal)
 		}
-		
+
 		switch segments.selectedSegmentIndex {
 			case 0: break;
 			case 1: break;
@@ -169,7 +170,7 @@ import HealthKit
 				lowestValues = limitResults(lowestValues, byFactor: 18)
 			default: break;
 		}
-		
+
 		dispatch_async(dispatch_get_main_queue()) {
 			self.chartView.mornings = morningValues
 			self.chartView.evenings = eveningValues
@@ -182,9 +183,9 @@ import HealthKit
 			self.chartView.drawDifferences = self.segments.selectedSegmentIndex < 3
 			self.chartView.dataChanged()
 		}
-		
+
 	}
-	
+
 	private func limitResults(_ values: NSArray, byFactor factor: Int) -> NSMutableArray { //TODO: drop _
 		var result = NSMutableArray.arrayWithCapacity(values.count/factor)
 		var i = 0
@@ -210,7 +211,7 @@ import HealthKit
 		}
 		return result
 	}
-	
+
 	private func clearResults() {
 		dispatch_async(dispatch_get_main_queue()) {
 			self.chartView.mornings = nil

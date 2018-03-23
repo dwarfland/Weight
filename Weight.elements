@@ -1,89 +1,87 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
-    <PropertyGroup>
-        <ProjectGuid>2FFAE269-937F-4DC2-9DD4-E2EF6BB64817</ProjectGuid>
-        <OutputType>Executable</OutputType>
-        <AssemblyName>Weight</AssemblyName>
-        <AllowGlobals>False</AllowGlobals>
-        <AllowLegacyWith>False</AllowLegacyWith>
-        <AllowLegacyOutParams>False</AllowLegacyOutParams>
-        <AllowLegacyCreate>False</AllowLegacyCreate>
-        <AllowUnsafeCode>False</AllowUnsafeCode>
-        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-        <SDK>iOS</SDK>
-        <CreateAppBundle>True</CreateAppBundle>
-        <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
-        <CodesignCertificateName>iPhone Developer: marc hoffman (K2YTD84U6W)</CodesignCertificateName>
-        <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
-        <EnableAsserts>False</EnableAsserts>
-        <GenerateDebugInfo>True</GenerateDebugInfo>
-        <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
-        <ProvisioningProfileName>Weight Develop (2016)</ProvisioningProfileName>
-        <ProvisioningProfile>fbfa8dac-9c65-4d1c-8743-3300897961bc</ProvisioningProfile>
-        <BundleVersion>1.8.2</BundleVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <Optimize>false</Optimize>
-        <OutputPath>.\bin\Debug</OutputPath>
-        <DefineConstants>DEBUG;TRACE;</DefineConstants>
-        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-        <CaptureConsoleOutput>False</CaptureConsoleOutput>
-        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-        <EnableAsserts>True</EnableAsserts>
-        <CreateIPA>True</CreateIPA>
-        <Architecture>arm64</Architecture>
-        <ProvisioningProfileName>Weight Develop (2016)</ProvisioningProfileName>
-        <ProvisioningProfile>fbfa8dac-9c65-4d1c-8743-3300897961bc</ProvisioningProfile>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <Optimize>False</Optimize>
-        <OutputPath>.\bin\Release</OutputPath>
-        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-        <CaptureConsoleOutput>False</CaptureConsoleOutput>
-        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-        <CreateIPA>True</CreateIPA>
-        <GenerateDSym>True</GenerateDSym>
-        <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
-        <ProvisioningProfileName>Weight App Store</ProvisioningProfileName>
-        <ProvisioningProfile>99b76863-9c67-4956-bf28-68bda9cb4b51</ProvisioningProfile>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="CoreGraphics"/>
-        <Reference Include="Foundation"/>
-        <Reference Include="UIKit"/>
-        <Reference Include="rtl"/>
-        <Reference Include="libToffee"/>
-        <Reference Include="libSwift"/>
-        <Reference Include="HealthKit"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="AppDelegate.swift"/>
-        <Compile Include="MainViewController.swift"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="Resources\Info.plist"/>
-        <Storyboard Include="Resources\MainStoryboard.storyboard"/>
-        <AppResource Include="Resources\Launch Images\Default-568h@2x.png"/>
-        <Compile Include="GraphViewController.swift"/>
-        <Compile Include="GraphView.swift"/>
-        <Storyboard Include="Resources\Launch.storyboard"/>
-        <AppResource Include="Resources\Settings.bundle"/>
-        <Compile Include="NumbersViewController.swift"/>
-        <Compile Include="DataAccess.swift"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-chart.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-chart@2x.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-chart@3x.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-numbers.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-numbers@2x.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-numbers@3x.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-add.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-add@2x.png"/>
-        <AppResource Include="Resources\Shortcut Images\shortcut-add@3x.png"/>
-        <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas"/>
-        <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas"/>
-        <AssetCatalog Include="Resources\Images.xcassets">
-            <AppIcon>AppIcon</AppIcon>
-        </AssetCatalog>
-    </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
+  <PropertyGroup>
+    <ProjectGuid>2FFAE269-937F-4DC2-9DD4-E2EF6BB64817</ProjectGuid>
+    <OutputType>Executable</OutputType>
+    <AssemblyName>Weight</AssemblyName>
+    <AllowGlobals>False</AllowGlobals>
+    <AllowLegacyWith>False</AllowLegacyWith>
+    <AllowLegacyOutParams>False</AllowLegacyOutParams>
+    <AllowLegacyCreate>False</AllowLegacyCreate>
+    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <SDK>iOS</SDK>
+    <CreateAppBundle>True</CreateAppBundle>
+    <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
+    <CodesignCertificateName>iPhone Developer: marc hoffman (K2YTD84U6W)</CodesignCertificateName>
+    <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
+    <EnableAsserts>False</EnableAsserts>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <DeploymentTargetVersion>10.0</DeploymentTargetVersion>
+    <BundleVersion>1.9.4</BundleVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <CaptureConsoleOutput>False</CaptureConsoleOutput>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <EnableAsserts>True</EnableAsserts>
+    <CreateIPA>True</CreateIPA>
+    <Architecture>arm64</Architecture>
+    <ProvisioningProfileName>Weight Develop (2018)</ProvisioningProfileName>
+    <ProvisioningProfile>4c7c568c-b7db-454a-914a-f74bb275deba</ProvisioningProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>False</Optimize>
+    <OutputPath>.\bin\Release</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <CaptureConsoleOutput>False</CaptureConsoleOutput>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <CreateIPA>True</CreateIPA>
+    <GenerateDSym>True</GenerateDSym>
+    <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
+    <ProvisioningProfileName>Weight App Store (2018)</ProvisioningProfileName>
+    <ProvisioningProfile>987aa4dc-8470-47c5-8822-8e47f33ec187</ProvisioningProfile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CoreGraphics" />
+    <Reference Include="Foundation" />
+    <Reference Include="UIKit" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libSwift" />
+    <Reference Include="HealthKit" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppDelegate.swift" />
+    <Compile Include="MainViewController.swift" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Info.plist" />
+    <Storyboard Include="Resources\MainStoryboard.storyboard" />
+    <AppResource Include="Resources\Launch Images\Default-568h@2x.png" />
+    <Compile Include="GraphViewController.swift" />
+    <Compile Include="GraphView.swift" />
+    <Storyboard Include="Resources\Launch.storyboard" />
+    <AppResource Include="Resources\Settings.bundle" />
+    <Compile Include="NumbersViewController.swift" />
+    <Compile Include="DataAccess.swift" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-chart.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-chart@2x.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-chart@3x.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-numbers.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-numbers@2x.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-numbers@3x.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-add.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-add@2x.png" />
+    <AppResource Include="Resources\Shortcut Images\shortcut-add@3x.png" />
+    <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas" />
+    <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas" />
+    <AssetCatalog Include="Resources\Images.xcassets">
+      <AppIcon>AppIcon</AppIcon>
+    </AssetCatalog>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>
