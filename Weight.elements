@@ -17,8 +17,8 @@
     <BundleIdentifier>com.dwarfland.Weight</BundleIdentifier>
     <EnableAsserts>False</EnableAsserts>
     <GenerateDebugInfo>True</GenerateDebugInfo>
-    <DeploymentTargetVersion>10.0</DeploymentTargetVersion>
-    <BundleVersion>1.9.4</BundleVersion>
+    <DeploymentTargetVersion>11.0</DeploymentTargetVersion>
+    <BundleVersion>1.9.10</BundleVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
@@ -30,8 +30,8 @@
     <EnableAsserts>True</EnableAsserts>
     <CreateIPA>True</CreateIPA>
     <Architecture>arm64</Architecture>
-    <ProvisioningProfileName>Weight Develop (2018)</ProvisioningProfileName>
-    <ProvisioningProfile>4c7c568c-b7db-454a-914a-f74bb275deba</ProvisioningProfile>
+    <ProvisioningProfileName>Weight Develop (2019)</ProvisioningProfileName>
+    <ProvisioningProfile>8393359c-dc57-49af-b781-702462f92486</ProvisioningProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>False</Optimize>
@@ -42,8 +42,8 @@
     <CreateIPA>True</CreateIPA>
     <GenerateDSym>True</GenerateDSym>
     <CodesignCertificateName>iPhone Distribution: RemObjects Software (24G43Y5373)</CodesignCertificateName>
-    <ProvisioningProfileName>Weight App Store (2018)</ProvisioningProfileName>
-    <ProvisioningProfile>987aa4dc-8470-47c5-8822-8e47f33ec187</ProvisioningProfile>
+    <ProvisioningProfileName>Weight App Store (2019)</ProvisioningProfileName>
+    <ProvisioningProfile>65a0b33b-e125-4c1b-8e98-782ed4a76d63</ProvisioningProfile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoreGraphics" />
@@ -53,12 +53,11 @@
     <Reference Include="libToffee" />
     <Reference Include="libSwift" />
     <Reference Include="HealthKit" />
+    <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDelegate.swift" />
     <Compile Include="MainViewController.swift" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\Info.plist" />
     <Storyboard Include="Resources\MainStoryboard.storyboard" />
     <AppResource Include="Resources\Launch Images\Default-568h@2x.png" />
@@ -77,11 +76,11 @@
     <AppResource Include="Resources\Shortcut Images\shortcut-add.png" />
     <AppResource Include="Resources\Shortcut Images\shortcut-add@2x.png" />
     <AppResource Include="Resources\Shortcut Images\shortcut-add@3x.png" />
-    <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCell.pas" />
-    <Compile Include="..\TwinPeaks\iOS\Elements\TPBaseCellView.pas" />
     <AssetCatalog Include="Resources\Images.xcassets">
       <AppIcon>AppIcon</AppIcon>
     </AssetCatalog>
+    <Compile Include="..\..\_RemObjects\TwinPeaks\iOS\Elements\TPBaseCell.pas" />
+    <Compile Include="..\..\_RemObjects\TwinPeaks\iOS\Elements\TPBaseCellView.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

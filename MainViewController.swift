@@ -22,6 +22,12 @@ import HealthKit
 			last.text = DataAccess.weightUnit.unitString
 		}
 
+		if #available(iOS 13.0) {
+			self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.systemImageNamed("ellipsis.circle"), style: .Plain, target: self, action: #selector(showActions:))
+		} else {
+			self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "...", style: .Plain, target: self, action: #selector(showActions:))
+		}
+
 		bmi.text = "  "
 		info.text = "  "
 		newValue.becomeFirstResponder()
@@ -413,4 +419,98 @@ import HealthKit
 	@IBAction func showDetails(_ sender: Any?) {
 		performSegueWithIdentifier("ShowDetails", sender: nil)
 	}
+
+	@IBAction func showActions(_ sender: Any?) {
+		let actionSheet = UIAlertController(title: "Actions", message: nil, preferredStyle: .ActionSheet)
+
+		//actionSheet.tintColor = UIApplication.sharedApplication?.delegate?.window?.tintColor
+		actionSheet.addAction(UIAlertAction(title: "Export", style: .Default, handler: {
+			self.exportAllData()
+		}))
+		actionSheet.addAction(UIAlertAction(title: "Import", style: .Default, handler: {
+			self.importData()
+		}))
+		actionSheet.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {
+			actionSheet.dismissViewControllerAnimated(true, completion: nil)
+		}))
+
+		actionSheet.popoverPresentationController?.barButtonItem = navigationItem.leftBarButtonItem
+		presentViewController(actionSheet, animated: true, completion: {})
+	}
+
+	//
+	//
+	//
+
+	func importData() {
+
+	}
+
+	func exportAllData() {
+		var canceled = false
+		let alert1 = UIAlertController(title: "Gathering Data", message: "Please Wait...", preferredStyle: .alert)
+		alert1.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {
+			canceled = true
+			alert1.dismissAnimated(true) {}
+		}))
+		present(alert1, animated: true) {
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) {
+				DataAccess.sharedInstance.getData() { json, error in
+					if !canceled {
+						DispatchQueue.main.async() {
+							alert1.dismissAnimated(true) {
+								if let json = json {
+									let alert2 = UIAlertController(title: "Done", message: "\(json.Count) records found.", preferredStyle: .alert)
+									alert2.addAction(UIAlertAction(title: "Copy", style: .Default, handler: {
+										UIPasteboard.generalPasteboard.string = json.ToString()
+										alert2.dismissAnimated(true) {}
+									}))
+									alert2.addAction(UIAlertAction(title: "Cacel", style: .Cancel, handler: {
+										alert2.dismissAnimated(true) {}
+									}))
+									self.present(alert2, animated: true) {}
+								} else if let error = error {
+									NSLog("error %@", error)
+									let alert2 = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
+									alert2.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: {
+										alert2.dismissAnimated(true) {}
+									}))
+									self.present(alert2, animated: true) {}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//func exportAllData2() {
+		//var canceled = false
+		//let alert1 = UIAlertController(title: "Gathering Data", message: "Please Wait", preferredStyle: .alert)
+		//alert1.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {
+			//canceled = true
+			//alert1.dismissAnimated(true) {}
+		//}))
+		//__await present(alert1, animated: true)
+
+		//__await dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0))
+		//let json = (__await DataAccess.sharedInstance.getData())
+		//if !canceled {
+			//__await DispatchQueue.main.async()
+			//__await alert1.dismissAnimated(true)
+
+			//let alert2 = UIAlertController(title: "Done", message: "Data has been copied to the pasteboard", preferredStyle: .alert)
+			//alert2.addAction(UIAlertAction(title: "Copy", style: .Cancel, handler: {
+				//UIPasteboard.generalPasteboard.setValue(json.ToString(), forPasteboardType: UIPasteboardTypeAutomatic)
+
+				//alert2.dismissAnimated(true) {}
+			//}))
+			//alert2.addAction(UIAlertAction(title: "Done", style: .Cancel, handler: {
+				//canceled = true
+				//alert2.dismissAnimated(true) {}
+			//}))
+			//self.present(alert2, animated: true) {}
+		//}
+	//}
 }

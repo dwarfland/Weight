@@ -5,7 +5,7 @@ import HealthKit
 
 	public override func viewDidLoad() {
 		title = "Chart"
-		segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
+		//segments.tintColor = UIColor.colorWithRed(0.75, green: 0.0, blue: 0.0, alpha: 1.0)
 
 		if let index = UserDefaults.standardUserDefaults.objectForKey(KEY_SELECTED_CHART_SEGMENT) {
 			segments.selectedSegmentIndex = index.integerValue
@@ -44,7 +44,7 @@ import HealthKit
 							  predicate: nil,
 							  limit: 10000,
 							  sortDescriptors: [descriptor],
-							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray?, error: NSError?) in
+							  resultsHandler: { (explicit: HKSampleQuery!, results: NSArray<Dynamic<HKSample!>>, error: NSError?) in
 
 			NSLog("-- updateData took %f, %ld records", -date.timeIntervalSinceNow, results != nil ? results!.count : -1);
 
@@ -74,9 +74,9 @@ import HealthKit
 			default: return
 		}
 
-		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var evenings = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var lowest = NSMutableArray.arrayWithCapacity(daysNeeded)
+		var mornings = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
+		var evenings = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
+		var lowest = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
 		var lastValue: HKQuantitySample? = nil
 		var lowestValue: HKQuantitySample? = nil
 		var lastDateComps: NSDateComponents? = nil

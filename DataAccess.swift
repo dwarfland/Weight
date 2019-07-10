@@ -68,13 +68,39 @@ public class DataAccess {
 		DataAccess.healthStore.executeQuery(q)
 	}
 
+	func getData(callback: (RemObjects.Elements.RTL.JsonArray?, String?) -> () ) {
+
+		let result = RemObjects.Elements.RTL.JsonArray()
+		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
+		let q = HKSampleQuery(sampleType: weightQuantityType,
+							  predicate: nil,
+							  limit: MAX_DAYS*4,
+							sortDescriptors: [descriptor]) { (explicit: HKSampleQuery!, results: NSArray<Dynamic<HKSample!>>!, error: NSError?) in
+
+			let df = NSDateFormatter()
+			df.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+
+			for v in results {
+				let value = RemObjects.Elements.RTL.JsonObject()
+				value["Time"] = df.string(from: v.endDate)
+				value["Unit"] = self.weightUnit.unitString
+				value["Weight"] = v.quantity.doubleValueForUnit(self.weightUnit)
+				result.Add(value)
+			}
+			callback?(result, error?.description)
+		}
+
+		DataAccess.healthStore.executeQuery(q)
+	}
+
+
 	func process(results values: NSArray, daysNeeded: Int, callback: (CollectedWeightData?) -> ()) {
 
 		//NSLog("processResults")
 
-		var mornings = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var evenings = NSMutableArray.arrayWithCapacity(daysNeeded)
-		var lowest = NSMutableArray.arrayWithCapacity(daysNeeded)
+		var mornings = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
+		var evenings = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
+		var lowest = NSMutableArray<Dynamic<HKSample>>.arrayWithCapacity(daysNeeded)
 		var lastValue: HKQuantitySample? = nil
 		var lowestValue: HKQuantitySample? = nil
 		var lastDateComps: NSDateComponents? = nil

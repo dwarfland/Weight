@@ -72,11 +72,11 @@ public class WeightCellView : TPBaseCellView {
 		let dataFont = first ? UIFont.boldSystemFontOfSize(26) : UIFont.systemFontOfSize(26)!
 		let smallFont = UIFont.fontWithName("HelveticaNeue-Light",size: 13)!
 
-		let mainAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.blackColor]
-		let morningAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.redColor.colorWithAlphaComponent(0.75)]
-		let eveningAttributes = [NSFontAttributeName: dataFont, NSForegroundColorAttributeName: UIColor.blueColor]
+		let mainAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: available("iOS 13.0") ? UIColor.labelColor : UIColor.blackColor]
+		let morningAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.colorNamed("Red")!.colorWithAlphaComponent(0.75)]
+		let eveningAttributes = [NSFontAttributeName: dataFont, NSForegroundColorAttributeName: UIColor.colorNamed("Blue")!]
 		let seperatorAttributes = [NSFontAttributeName: mainFont, NSForegroundColorAttributeName: UIColor.grayColor]
-		let smallAttributes = [NSFontAttributeName: smallFont, NSForegroundColorAttributeName: UIColor.darkGrayColor]
+		let smallAttributes = [NSFontAttributeName: smallFont, NSForegroundColorAttributeName: UIColor.grayColor]
 
 		var lCalendar = NSCalendar.currentCalendar
 		var lUnitFlags = NSCalendarUnit.NSWeekdayCalendarUnit || NSCalendarUnit.NSYearCalendarUnit
@@ -106,7 +106,11 @@ public class WeightCellView : TPBaseCellView {
 			UIColor.colorWithRed(1.0, green: 0.9, blue: 0.9, alpha: 1.0).setFill()
 			UIRectFill(frame)
 		} else {
-			UIColor.whiteColor.setFill()
+			if #available(iOS 13.0) {
+				UIColor.systemBackgroundColor.setFill()
+			} else {
+				UIColor.whiteColor.setFill()
+			}
 			UIRectFill(frame)
 			/*(if AppDelegate.instance.best.intValue > 0 then begin
 			  var f2 := f;
