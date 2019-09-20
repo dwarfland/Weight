@@ -18,7 +18,7 @@
     <EnableAsserts>False</EnableAsserts>
     <GenerateDebugInfo>True</GenerateDebugInfo>
     <DeploymentTargetVersion>11.0</DeploymentTargetVersion>
-    <BundleVersion>1.9.10</BundleVersion>
+    <BundleVersion>1.9.11</BundleVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
@@ -32,6 +32,7 @@
     <Architecture>arm64</Architecture>
     <ProvisioningProfileName>Weight Develop (2019)</ProvisioningProfileName>
     <ProvisioningProfile>8393359c-dc57-49af-b781-702462f92486</ProvisioningProfile>
+    <UseLegacyToffeeMode>False</UseLegacyToffeeMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>False</Optimize>
@@ -79,8 +80,8 @@
     <AssetCatalog Include="Resources\Images.xcassets">
       <AppIcon>AppIcon</AppIcon>
     </AssetCatalog>
-    <Compile Include="..\..\_RemObjects\TwinPeaks\iOS\Elements\TPBaseCell.pas" />
-    <Compile Include="..\..\_RemObjects\TwinPeaks\iOS\Elements\TPBaseCellView.pas" />
+    <Compile Include="TPBaseCell.pas" />
+    <Compile Include="TPBaseCellView.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

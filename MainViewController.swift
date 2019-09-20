@@ -443,7 +443,12 @@ import HealthKit
 	//
 
 	func importData() {
-
+		let alert1 = UIAlertController(title: "In the next beta", message: ";)", preferredStyle: .alert)
+		alert1.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: {
+			alert1.dismissAnimated(true) {}
+		}))
+		present(alert1, animated: true) {
+		}
 	}
 
 	func exportAllData() {
@@ -465,7 +470,7 @@ import HealthKit
 										UIPasteboard.generalPasteboard.string = json.ToString()
 										alert2.dismissAnimated(true) {}
 									}))
-									alert2.addAction(UIAlertAction(title: "Cacel", style: .Cancel, handler: {
+									alert2.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {
 										alert2.dismissAnimated(true) {}
 									}))
 									self.present(alert2, animated: true) {}

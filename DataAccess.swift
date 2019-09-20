@@ -38,7 +38,7 @@ public class DataAccess {
 
 		//NSLog("1")
 		//NSLog("callback %@", callback)
-		callback.copy()
+		//callback.copy()
 		//NSLog("callback %@", callback)
 		let descriptor = NSSortDescriptor.sortDescriptorWithKey(HKSampleSortIdentifierEndDate, ascending: false)
 		let q = HKSampleQuery(sampleType: weightQuantityType,
